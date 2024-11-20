@@ -1,0 +1,7 @@
+---
+title: "Analysis on population pf different age groups vs different regions"
+author: "Bailey Dalton, Dhanya Dharshini Veeraraghavan, Vincent Currie"
+date: "2024-11-20"
+output: html_document
+---
+
