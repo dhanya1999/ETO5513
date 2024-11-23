@@ -21,7 +21,47 @@ data <- read.csv("Data/population-young-working-elderly.csv")
 
 ```
 
-## Visualisation
+# Group Section - Introduction 
+
+
+# Research Questions - to asnwer in each analysis 
+
+#### * Bailey Research Questions:
+  * How has population changed through the decades in each continent and what mihgt this suggest about countries socioeconomic status? 
+  * Which regions are experiencing a "youth bulge" or "Ageing population", and what might this imply for their future economic and social policies? 
+
+
+#### * Vincent Research Questions:
+  * 1. ?? 
+  * 2. ?? 
+
+
+
+#### * Dhanya Reserach Questoins: 
+  * How has the population aged 65+ evolved globally over the past few decades, and what regions show the fastest growth in this age group?  
+    - Aging populations are growing faster in developed countries due to higher life expectancy and declining fertility rates.
+    - Certain developing countries may show a recent sharp increase, indicating early stages of demographic transition.
+    - Regional differences highlight the need for targeted healthcare and social support systems.
+
+  * What is the trend in the 0-14 age group population across different regions, and how does it reflect changes in birth rates or youth demographics?  
+    - Declining trends in 0-14 populations in developed regions suggest falling birth rates, often associated with economic development and urbanization.
+    - Regions with stable or growing 0-14 populations indicate continued high fertility rates, potentially creating future workforce surges.
+
+
+
+# Bailey - Analysis 
+
+
+
+
+# Vincent - Analysis 
+
+
+
+
+# Dhanya Analysis 
+
+#### Visualisation
 
 #### Fig 1: Population Aged 65+ for Selected countries (1950-2020) - Dhanya
 
@@ -82,7 +122,7 @@ ggplot(filtered_data, aes(x = Year, y = Population_0to14, fill = Entity)) +
 
 ```
 
-## Tables
+#### Tables
 
 ```{r}
 # Calculate growth in the population aged 65+
@@ -131,11 +171,13 @@ China, India, and Japan lead in growth, driven by rising life expectancies and l
 
 India, Nigeria, and Pakistan dominate, driven by high fertility rates in developing nations. Indonesia’s rise signals Southeast Asia’s growing youth population, while China’s moderated growth reflects earlier demographic trends during its high-fertility era.
 
-## Conclusion - Append this to final conclusion:
+# Group Section - Conclusion & References 
+
+### Conclusion - Append this to final conclusion:
 
 These trends illustrate aging challenges in developed nations and youth-driven opportunities in developing regions. Targeted policies in healthcare, education, and economic planning are essential to manage these demographic shifts effectively.
 
-## References
+### References
 
 World Bank. (2023). Population and demographic indicators. Retrieved from https://www.worldbank.org
 
