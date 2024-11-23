@@ -1,0 +1,72 @@
+/* Unified table styling */
+/* Add wrapper for scrollable tables */
+
+.table-wrapper {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+  max-width: 100%;   /* Limit width to prevent horizontal overflow */
+  max-height: 400px; /* Set a max height for vertical scrolling */
+  margin-bottom: 20px; /* Space below the table */
+  padding: 10px;
+  background-color: #f9f9f9; /* Optional: Background color to distinguish the wrapper */
+}
+
+/*The table, th, and td rules add a unified 1-pixel black border and collapse the borders, making the table clean and clear.*/
+table {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid black;
+}
+
+/* Styling for table captions */
+/*The caption selector styles table captions, ensuring they are bold, a bit larger, and centered.*/
+caption {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333333;
+  text-align: center;
+  padding: 8px 0;
+}
+
+/* Style for figure containers */
+/* The figure block centers the image container, adds a border, and provides padding to create a framed look.*/
+figure {
+  display: inline-block; /* Ensures figure acts as a centered block */
+  text-align: center;
+  border: 1px solid black;
+  padding: 10px;
+  margin: 20px auto;
+}
+
+/* Style for figcaption  */
+/*The figcaption is styled with bold text and a consistent font size, centered to appear at the top of the figure.*/
+figcaption {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 10px; /* Adds space between figcaption and image */
+}
+
+/* Target the caption class and make the text bold */
+p.caption {
+    font-weight: bold;
+    font-size: 16px; /* Optional: adjust the font size */
+    color: #333333; /* Optional: adjust the color */
+    text-align: center; /* Optional: center the caption */
+    margin-top: 10px; /* Optional: space above the caption */
+    margin-bottom: 10px; /* Optional: space below the caption */
+}
+
+/* Style for images within figure */
+/* The figure img ensures the image is centered within the figure block, with a border and padding to make it stand out.*/
+figure img {
+  display:  block;
+  margin: 0 auto; /* Centers image within figure */
+  border: 1px solid black;
+  padding: 5px;
+}
+

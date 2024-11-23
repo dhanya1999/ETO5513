@@ -1,0 +1,277 @@
+---
+title: "Analysis of Population Dynamics by Age Groups and Regions"
+author: "Bailey Dalton, Dhanya Dharshini Veeraraghavan, Vincent Currie"
+date: "`r toupper(format(Sys.Date(), '%d-%b-%Y'))`" # VC
+output: 
+  #html_document VC:
+  bookdown::html_document2:
+    css: !expr here::here("Scripts","custom.css") # Examples taken from https://www.w3schools.com/css/default.asp.
+    toc: true
+    df_print: paged
+    number_sections: true
+    fig_caption: true
+bibliography: references.bib
+csl: apa.csl
+---
+```{r Setup, message=TRUE, warning=TRUE}
+
+#
+# VC: Set the default behaviour for displaying code in all chunks to ensure that all chunks will display their code, 
+# unless turned off within a specific chunk.
+#
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+
+```
+
+```{r Libs, include=FALSE}
+#
+# VC:
+# Load necessary libraries.
+#
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(tidyr)
+library(plotly)
+library(readr)  # VC: The read_csv() command is more efficient than base R read.csv() for loading:
+#   https://bookdown.org/rdpeng/rprogdatascience/using-the-readr-package.html,
+#   https://rforhr.com/index.html.
+library(here)   # VC: Ensure that file paths are always relative to the project root directory:
+#   https://cran.r-project.org/web/packages/here/vignettes/rmarkdown.html.
+library(tibble) # VC:
+library(kableExtra) # VC: Extra kable styling options.
+library(bookdown) # VC:
+
+```
+
+## Research Question
+
+How does the gender gap in STEM (Science, Technology, Engineering, and Mathematics) education compare to other fields of study?
+
+## Data Preperation
+
+```{r ProcData, message=TRUE, warning=TRUE}
+#
+# Load the dataset.
+#
+fp1 <- here("Data", "population-young-working-elderly.csv")
+# VC : data <- read.csv("Data/population-young-working-elderly.csv")
+
+#
+# VC: Load the Population Young Working Elderly CSV file into the d1 tibble.
+#
+d1 <- read_csv(fp1, show_col_types = FALSE)
+
+#
+# VC: Set the relative file path (assuming the file is in the 'Data' directory).
+# Use here() to specify the relative file path using the root of the R project (where the .Rproj file is located).
+#
+fp2 <- here("Data", "Gender_education_area.csv")
+
+#
+# VC: Load the Gender Education CSV file into the d1 tibble.
+#
+d2 <- read_csv(fp2, show_col_types = FALSE)
+
+
+```
+
+
+
+
+## Visualisation
+
+#### Fig 1: Population Aged 65+ for Selected countries (1950-2020) - Dhanya
+
+```{r Pop65, fig.cap="Population Aged 65+ for Selected countries (1950-2020) - Dhanya", fig.topcaption=TRUE}
+
+# Define countries to highlight
+highlight_countries <- c("United States", "China", "India", "Australia", "Japan")
+
+# Filter data for highlighted countries
+# VC: highlighted_data <- data %>% filter(Entity %in% highlight_countries)
+highlighted_data <- d1 %>% filter(Entity %in% highlight_countries)
+
+# Create the stacked area chart
+ggplot(highlighted_data, aes(x = Year, y = Population_65plus, fill = Entity)) +
+  geom_area(alpha = 0.8) +  # Use geom_area for stacked chart
+  labs(x = "Year",
+       y = "Population",
+       fill = "Country") +
+  theme_minimal() +
+  scale_fill_manual(values = c(
+    "United States" = "red", 
+    "China" = "yellow", 
+    "India" = "green", 
+    "Australia" = "purple", 
+    "Japan" = "orange"
+  ))
+
+```
+
+#### Population Aged 0-14 for Selected Countries (1950-2020)
+
+```{r Pop014, fig.cap="Population Aged 0-14 for Selected Countries (1950-2020) - Dhanya", fig.topcaption=TRUE}
+
+# Define countries to include
+selected_countries <- c("United States", "China", "India", "Australia", "Japan")
+
+# Filter data for the selected countries
+# VC: filtered_data <- data %>%
+filtered_data <- d1 %>%
+  filter(Entity %in% selected_countries) %>%
+  group_by(Entity, Year) %>%
+  summarise(Population_0to14 = sum(Population_0to14, na.rm = TRUE))
+
+# Create the stacked area chart
+ggplot(filtered_data, aes(x = Year, y = Population_0to14, fill = Entity)) +
+  geom_area(alpha = 0.8) +  # Stacked area chart
+  labs(x = "Year",
+       y = "Population",
+       fill = "Country") +
+  theme_minimal() +
+  scale_fill_manual(values = c(
+    "United States" = "red", 
+    "China" = "blue", 
+    "India" = "green", 
+    "Australia" = "purple", 
+    "Japan" = "orange"
+  ))
+
+```
+
+## Tables
+
+```{r table-HGrowth, warning=FALSE, tab.cap="Top 5 Countries with Highest Growth in Population Aged 65+.", tab.cap.style = "inline"}
+# Calculate growth in the population aged 65+
+growth <- d1 %>%
+# VC: growth <- data %>%
+  group_by(Entity) %>%
+  summarise(Start_1950 = first(Population_65plus),
+            End_2023 = last(Population_65plus)) %>%
+  mutate(Growth = End_2023 - Start_1950) %>%
+  arrange(desc(Growth)) %>%
+  head(5)
+
+# Display the table
+kable(growth,
+      booktabs = TRUE, 
+      align = "c", 
+      format = "html") %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    position = "center",
+    full_width = FALSE
+  )
+```
+
+```{r table-HGrowth014, warning=FALSE, tab.cap="Top 5 Countries with Highest Growth in Population Aged 0-14.", tab.cap.style = "inline"}
+# Calculate growth in the population aged 0-14 for each country
+growth <- d1 %>%
+#VC: growth <- data %>%
+  group_by(Entity) %>%
+  summarise(Start_1950 = first(Population_0to14),
+            End_2023 = last(Population_0to14),
+            Growth = End_2023 - Start_1950) %>%
+  arrange(desc(Growth)) %>%
+  head(5)
+
+# Display the table
+kable(growth,
+      booktabs = TRUE, 
+      align = "c", 
+      format = "html") %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    position = "center",
+    full_width = FALSE
+  )
+```
+
+```{r}
+
+print(here::here("Scripts","custom.css"))
+
+```
+
+
+```{r table-DTypes, warning=FALSE, tab.cap="Reduced Set of Interesting Column Names and <br> Data Types.", tab.cap.style = "inline"}
+
+#
+# VC: Select the specific columns as there are a lot and only want the ones of interest.
+#
+selected_columns <- c("Reference area", "Education level", "Field of education", "Sex")  
+
+#
+# VC: Extract the column names and data types.
+#
+selected_data_types <- sapply(d2[, selected_columns], class)
+
+
+#
+# VC: Display column names in a neat table format using kable.
+# Create a tibble with column names and their corresponding data types
+# for display.
+#
+cn2 <- tibble(
+  column_name = selected_columns,
+  data_type = selected_data_types
+)
+              
+#
+# Display column names and data types as a formatted table.
+# Requires the format parameter due to a known issue of double printing the "Table":
+#    https://github.com/haozhu233/kableExtra/issues/831
+#
+knitr::kable(
+  cn2,
+  col.names = c("Column Name", "Data Type"),
+  booktabs = TRUE, 
+  align = "c", 
+  format = "html"
+)  %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover"),
+    position = "center",
+    full_width = FALSE
+  )
+
+```
+
+
+## Analysis
+
+
+###### Figure 1: Population Aged 65+ for Selected Countries (1950-2020)
+
+This chart highlights the rapid growth of elderly populations in selected countries. China shows the steepest increase due to improved healthcare and longer life expectancy [@RN16]. Japan’s sharp rise post-1970 reflects its aging crisis caused by low fertility and high longevity, leading to challenges in sustaining healthcare and pensions [@RN17]. India’s slower growth suggests it remains in an earlier demographic stage, while the United States and Australia exhibit steady but less pronounced growth.
+
+###### Figure 2: Population Aged 0-14 for Selected Countries (1950-2020)
+
+India retains the largest 0-14 population due to high fertility rates [@RN18]. In contrast, China’s decline post-1970s aligns with its one-child policy [@RN19]. Developed nations like the United States, Japan, and Australia show consistent declines, reflecting lower birth rates and the challenges of maintaining a sustainable workforce in aging populations.
+
+###### Table 1: Top 5 Countries with Highest Growth in Population Aged 65+
+
+China, India, and Japan lead in growth, driven by rising life expectancies and large populations (UN DESA, 2023). Brazil and Russia follow, reflecting similar aging trends in emerging economies as they transition demographically.
+
+###### Table 2: Top 5 Countries with Highest Growth in Population Aged 0-14
+
+India, Nigeria, and Pakistan dominate, driven by high fertility rates in developing nations. Indonesia’s rise signals Southeast Asia’s growing youth population, while China’s moderated growth reflects earlier demographic trends during its high-fertility era.
+
+## Conclusion - Append this to final conclusion:
+
+These trends illustrate aging challenges in developed nations and youth-driven opportunities in developing regions. Targeted policies in healthcare, education, and economic planning are essential to manage these demographic shifts effectively.
+
+## References
+
+World Bank. (2023). Population and demographic indicators. Retrieved from https://www.worldbank.org
+
+OECD. (2023). The silver economy: Policies for an aging society. Retrieved from https://www.oecd.org
+
+UNICEF. (2024). State of the world's children. Retrieved from https://www.unicef.org
+
+Pletcher, K. (2024). China's one-child policy and its effects. Encyclopaedia Britannica. Retrieved from https://www.britannica.com
+
+United Nations Department of Economic and Social Affairs. (2023). World population prospects. Retrieved from https://population.un.org
+
+# Referrences
