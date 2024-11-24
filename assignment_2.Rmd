@@ -27,13 +27,14 @@ data <- read.csv("Data/population-young-working-elderly.csv")
 # Research Questions - to asnwer in each analysis 
 
 #### * Bailey Research Questions:
-  * How has population changed through the decades in each continent and what mihgt this suggest about countries socioeconomic status? 
+  * How has population changed through the decades in each continent and what might this suggest about countries socioeconomic status? 
   * Which regions are experiencing a "youth bulge" or "Ageing population", and what might this imply for their future economic and social policies? 
+  * What age group contains the largest population & how is it trending for each of low, medium and high developed regions ? 
 
 
 #### * Vincent Research Questions:
-  * 1. ?? 
-  * 2. ?? 
+  * 1. How does the gender gap in STEM (Science, Technology, Engineering, and Mathematics) education compare to other fields of study? 
+  * 2.  What policies or factors have contributed to significant reductions in educational gender gaps?
 
 
 
@@ -75,11 +76,27 @@ data1 <- data1 %>%
   ) %>% 
   # remove missing values 
   filter(
-    !is.na(Population_65plus) & !is.na(Population_0to14) & !is.na(Population_15to64)
-  )
+    !is.na(Population_65plus) & !is.na(Population_0to14) & !is.na(Population_15to64) & !is.na(Code)
+  ) 
 ```
 
+### Figure 1 - How has the population changed over the decades for each continent 
 
+```{r pop change continent, echo = TRUE, eval = TRUE}
+Continent_data <- data1 %>% 
+  filter(Entity %in% c("Africa (UN)", 
+                       "Americas (UN)", 
+                       "Asia (UN)", 
+                       "Europe (UN)", 
+                       "Northern America (UN)", 
+                       "Australia")) %>% 
+  mutate(Population = Population_65plus + Population_15to64 + Population_0to14)
+
+ggplot(Continent_data, aes(x = Year, y = Population, color = Entity)) +
+  geom_col() +
+  facet_wrap(~ Entity, scales ="free_y") + 
+  theme(legend.position = "none")
+```
 
 
 
