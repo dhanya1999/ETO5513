@@ -52,6 +52,36 @@ data <- read.csv("Data/population-young-working-elderly.csv")
 # Bailey - Analysis 
 
 
+```{r data preparation, eval = TRUE, echo = TRUE }
+# read in data file
+data1 <- read.csv("data/population-young-working-elderly-with-projections.csv")
+
+# select only relevant variable columns 
+data1 <- data1 %>% 
+  # Rename varibles to simplify 
+  rename(
+    Population_65plus = Population...Sex..all...Age..65....Variant..estimates,
+    Population_15to64 = Population...Sex..all...Age..15.64...Variant..estimates,
+    Population_0to14 = Population...Sex..all...Age..0.14...Variant..estimates
+  ) %>% 
+  # Select relevant columns 
+  select(
+    Entity, 
+    Code, 
+    Year, 
+    Population_65plus, 
+    Population_15to64,
+    Population_0to14
+  ) %>% 
+  # remove missing values 
+  filter(
+    !is.na(Population_65plus) & !is.na(Population_0to14) & !is.na(Population_15to64)
+  )
+```
+
+
+
+
 
 
 # Vincent - Analysis 

@@ -418,6 +418,30 @@ high fertility rates, potentially creating future workforce surges.</li>
 </div>
 <div id="bailey---analysis" class="section level1">
 <h1>Bailey - Analysis</h1>
+<pre class="r"><code># read in data file
+data1 &lt;- read.csv(&quot;data/population-young-working-elderly-with-projections.csv&quot;)
+
+# select only relevant variable columns 
+data1 &lt;- data1 %&gt;% 
+  # Rename varibles to simplify 
+  rename(
+    Population_65plus = Population...Sex..all...Age..65....Variant..estimates,
+    Population_15to64 = Population...Sex..all...Age..15.64...Variant..estimates,
+    Population_0to14 = Population...Sex..all...Age..0.14...Variant..estimates
+  ) %&gt;% 
+  # Select relevant columns 
+  select(
+    Entity, 
+    Code, 
+    Year, 
+    Population_65plus, 
+    Population_15to64,
+    Population_0to14
+  ) %&gt;% 
+  # remove missing values 
+  filter(
+    !is.na(Population_65plus) &amp; !is.na(Population_0to14) &amp; !is.na(Population_15to64)
+  )</code></pre>
 </div>
 <div id="vincent---analysis" class="section level1">
 <h1>Vincent - Analysis</h1>
