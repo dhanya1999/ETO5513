@@ -28,7 +28,7 @@ data <- read.csv("Data/population-young-working-elderly.csv")
 
 #### * Bailey Research Questions:
   * How has population changed through the decades in each continent and what might this suggest about countries socioeconomic status? 
-  * How has a region's level of development influenced population changes over time? Specifically, what are the population trends from 1950 to 2020 in low, medium, and high-development regions in each of youth, working and elderly age groups?"
+  * How has a region's economic development influenced population changes over time? Specifically, what are the population trends from 1950 to 2020 in low, medium, and high economic regions in each age group (youth, working and elderly)?"
 
 
 #### * Vincent Research Questions:
@@ -101,6 +101,7 @@ ggplot(Continent_data, aes(x = Year, y = Population, color = Entity)) +
 
 ```{r}
 library(scales)
+library(kableExtra)
 ```
 
 
@@ -152,14 +153,106 @@ Population_DevelopmentData <- data1 %>%
     "Socio_Economic_Status" = Entity
   ) %>% 
   gather(AgeGroup, Population, "65+", "15-64", "0-14") %>% 
-  select(!Code)
+  select(!Code) %>%
+  mutate(Socio_Economic_Status = factor(Socio_Economic_Status, 
+         levels = c("Low-income countries", 
+                    "Lower-middle-income countries",
+                    "Upper-middle-income countries", 
+                    "High-income countries")))
+  
 
-ggplot(Population_DevelopmentData, aes(x = Year, y = Population, color = Socio_Economic_Status, fill = Socio_Economic_Status)) +
-  geom_area() +
-  facet_wrap(~ AgeGroup)
+ggplot(Population_DevelopmentData, aes(x = Year, y = Population, fill = AgeGroup)) +
+  geom_area(alpha = 0.7) + 
+  facet_wrap(~ Socio_Economic_Status, nrow = 2) + 
+  labs(title = "Population trends from 1950 to 2020 for varying economic regions", 
+       x = "Year", 
+       y = "Population", 
+       fill = "Age Groups") +
+  theme_minimal() + 
+  scale_fill_manual(values = c(
+    "0-14" = "gold",
+    "15-64" = "cyan",
+    "65+" = "magenta"
+  ))
 ```
 
+### Table 2: 
 
+```{r}
+Economic_Popdata1 <- Population_DevelopmentData %>% 
+  filter(Year %in% c(1950, 1985, 2020)) %>% 
+  group_by(Year, Socio_Economic_Status, AgeGroup) %>% 
+  summarise(Total_Population = sum(Population, na.rm = TRUE)) %>% 
+  ungroup()
+
+Economic_Popdata_wide1 <- Economic_Popdata1 %>%
+  spread(key = AgeGroup, value = Total_Population)%>% 
+  mutate(Total_Population = `0-14` + `15-64` + `65+`,
+         "%_0-14" = `0-14` / Total_Population * 100,
+         "%_15-64" = `15-64` / Total_Population * 100,
+         "%_65+" = `65+` / Total_Population * 100
+         ) 
+
+Economic_populations <- Economic_Popdata_wide1%>%
+  select(
+    Year, 
+    Socio_Economic_Status, 
+    `0-14`,
+    `15-64`,
+    `65+`
+  ) %>% 
+  mutate(across(starts_with(c("0-14", "15-64", "65+")),
+                ~ label_number(scale = 1e-6, suffix = "M", accuracy = 0.1)(.)
+                ),
+         Year = as.character(Year)
+         ) 
+
+Economic_pop_percentages <- Economic_Popdata_wide1 %>% 
+  select(
+    Year, Socio_Economic_Status, `%_0-14`, `%_15-64`, `%_65+`
+  ) %>% 
+  rename(
+    `0-14` = `%_0-14`, `15-64`= `%_15-64`, `65+` = `%_65+`
+  ) %>% 
+  mutate(
+    `0-14` = round(`0-14`, 2),  # Round the percentage to 2 decimal places
+    `15-64` = round(`15-64`, 2), # Round the percentage to 2 decimal places
+    `65+` = round(`65+`, 2)      # Round the percentage to 2 decimal places
+  ) %>% 
+  mutate(
+    `0-14` = paste0(`0-14`, "%"),  # Convert to string and add "%" sign
+    `15-64` = paste0(`15-64`, "%"), # Convert to string and add "%" sign
+    `65+` = paste0(`65+`, "%")      # Convert to string and add "%" sign
+  ) %>% 
+  mutate(Year = paste0(Year, " (%)"))
+
+Economic_Popdata_wide1 <- Economic_populations %>%
+  pivot_wider(names_from = Socio_Economic_Status, values_from = c("0-14", "15-64", "65+"))
+
+Eco_percentages_wide <- Economic_pop_percentages %>% 
+  pivot_wider(names_from = Socio_Economic_Status, values_from = c("0-14", "15-64", "65+"))
+  
+
+# Join the two wider tables 
+Economic_pop_data_combined <- bind_rows(Economic_Popdata_wide1, Eco_percentages_wide) %>% 
+  arrange(Year)
+
+
+Economic_pop_data_combined %>%
+  kable(col.names = c("Year", 
+                      "0-14", "15-64", "65+",
+                      "0-14", "15-64", "65+",
+                      "0-14", "15-64", "65+",
+                      "0-14", "15-64", "65+")) %>%
+  kable_styling(full_width = TRUE, position = "center") %>%
+  column_spec(1, bold = TRUE) %>%  # Bold the Year column
+  row_spec(seq(2, nrow(Economic_pop_data_combined), by = 2), background = "lightgray") %>% 
+  add_header_above(c(" " = 1, 
+                     "Low-income Countries" = 3, 
+                     "Lower-middle-income Countries" = 3, 
+                     "Upper-middle-income Countries" = 3, 
+                     "High-income Countries" = 3))
+```
 
 
 # Vincent - Analysis 
