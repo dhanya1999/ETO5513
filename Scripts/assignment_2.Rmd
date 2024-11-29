@@ -41,12 +41,25 @@ library(here)   # VC: Ensure that file paths are always relative to the project 
 library(tibble) # VC:
 library(kableExtra) # VC: Extra kable styling options.
 library(bookdown) # VC:
+library(reshape2)
+library(ggrepel)
+#library(DT)
+#library(gt)
 
 ```
 
 ## Research Question
 
-How does the gender gap in STEM (Science, Technology, Engineering, and Mathematics) education compare to other fields of study?
+### How does the gender gap in STEM education compare to other fields globally between 2015 and 2022?
+
+This analysis draws on data from the @RN21 to examine gender disparities in education, focusing on the number of enrolled students, new entries, and graduates. It assesses female representation in STEM fields relative to other areas, aiming to determine whether STEM fields experience a shortfall of females. The source data is available [here](https://data-explorer.oecd.org/vis?fs[0]=Topic%2C1%7CEducation%20and%20skills%23EDU%23%7CStudents%23EDU_STU%23&pg=0&fc=Topic&bp=true&snb=31&df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_EAG_UOE_NON_FIN_STUD%40DF_UOE_NF_DIST_FIELD&df[ag]=OECD.EDU.IMEP&df[vs]=1.0&dq=.ISCED11_5T8%2BISCED11_5%2BISCED11_6%2BISCED11_7%2BISCED11_8.GRAD...F00%2BF01%2BF02%2BF03%2BF04%2BF05%2BF06%2BF07%2BF08%2BF09%2BF10%2B_TX_U..A...._T.._T.&pd=2015%2C&to[TIME_PERIOD]=false&ly[cl]=EDUCATION_FIELD%2CTIME_PERIOD&ly[rs]=EDUCATION_LEV&ly[rw]=REF_AREA&vw=tb).
+
+Table \@ref(tab:table-FldCmpr) provides a detailed breakdown of various vocational areas. STEM fields are highlighted in <font size="4">*italics*</font> and <font size="4">large font</font>, while the broader categories of **STEM** and **OTHER** represent collections of different vocational groupings. STEM includes the highlighted fields, while OTHER covers all remaining professions.
+
+The analysis calculates the gender gap as the difference between the number of males and females in each global category (males - females). A positive value indicates a shortfall of females in STEM (males outnumber females), while a negative value reflects more females than males, suggesting no shortfall.
+
+### How does gender parity in STEM education compare to non-STEM fields in Australia across different levels and fields from 2015 to 2022?
+
 
 ## Data Preperation
 
@@ -55,28 +68,161 @@ How does the gender gap in STEM (Science, Technology, Engineering, and Mathemati
 # Load the dataset.
 #
 fp1 <- here("Data", "population-young-working-elderly.csv")
-# VC : data <- read.csv("Data/population-young-working-elderly.csv")
 
 #
-# VC: Load the Population Young Working Elderly CSV file into the d1 tibble.
+# Load the Population Young Working Elderly CSV file.
 #
 d1 <- read_csv(fp1, show_col_types = FALSE)
 
 #
-# VC: Set the relative file path (assuming the file is in the 'Data' directory).
-# Use here() to specify the relative file path using the root of the R project (where the .Rproj file is located).
+# Set the relative file path (assuming the file is in the 'Data' directory).
+# Use here() to specify the relative file path using the root of the R project 
+# (where the .Rproj file is located).
 #
-fp2 <- here("Data", "Gender_education_area.csv")
+fp2 <- here("Data", "Gender_education_area2015_2022.csv")
 
 #
-# VC: Load the Gender Education CSV file into the d1 tibble.
+# Load the Gender Education csv.
 #
 d2 <- read_csv(fp2, show_col_types = FALSE)
 
+#
+# Vector of the required columns.
+#
+sc2 <- c("Reference area", 
+         "Education level", 
+         "Field of education", 
+         "Sex",
+         "OBS_VALUE")
+
+#
+# The following steps are undertaken:
+#    Rename the column names to something more meaningful.
+#    Obtain the mean percentage by gender category for country, education level and field using group by and summarise.
+#    Turn the gender category into columns with the calculated means using pivot: giving "Total" and "Female" columns.
+#    Calculate the "Male" %  using mutate to create the column as Male = Total - Female. The coalesce replaces NA with 0.
+#    
+#
+ rn2 <- d2[, sc2] %>%
+    rename(Cntry = "Reference area",           # Country.
+           Edctn_lvl = "Education level",      # Education Level.
+           Fld = "Field of education",         # Field.
+           Gndr_ctgry = "Sex",                 # Gender Category (Values: Female and Total)
+           Obsrvtn_vl = "OBS_VALUE")  %>%      # Percentage. For example, percentage of female participation.
+    group_by(Cntry, Edctn_lvl, Fld, Gndr_ctgry)  %>%
+    summarise(mObsrvtn_vl = mean(Obsrvtn_vl,na.rm = TRUE),.groups = "drop") %>%
+    pivot_wider(names_from = Gndr_ctgry, values_from = mObsrvtn_vl) %>%
+    mutate(Male = coalesce(Total,0) - coalesce(Female,0)) 
+
+# 
+# Define a vector of STEM-related keywords to search for to classify field as stem or not.
+#
+ stem_keywords <- c("Science", "Technology", "Engineering", "Mathematics", "ICT", "Veterinary")
+
+#
+# Add a new column 'STEM_Status' categorizing as 'STEM' or 'OTHER'.
+#    Exclude "Total (excluding unknown)" as its not a discipline.
+#    Add STEM_Status to the data frame using mutate:
+#       * Collapse stem_keywords down to a string of "or" cases using paste and collapse keyword.
+#       * Search the "Fld" column looking for a stem keyword in each row using "grepl" command, ignoring case.
+#       *   If a stem keyword is found, assign the STEM_Status column the value "STEM", 
+#       *   else assign the STEM_Status column the value "OTHER" using the "case_when" command. 
+#       *   Make the special case of "Social sciences" "OTHER" as its not part of stem but "science" is in the name.
+#    Change the STEM_Status column to categorical using mutate and,
+#    Calculate the Gender Gap which is the difference between Male and Female percentages working in that field:
+#       If the Gender Gap is positive, it means that Males are dominant in the field,
+#       else it means that females are dominant if the field for Gender Gap < 0.
+# 
+rn2 <- rn2 %>%
+  filter(Fld != "Total (excluding unknown)") %>%  
+  mutate(STEM_Status = case_when(
+    grepl(paste(stem_keywords, collapse = "|"), Fld, ignore.case = TRUE) & 
+    !grepl("social science|arts|humanities", Fld, ignore.case = TRUE) ~ "STEM",
+    TRUE ~ "OTHER"
+  )) %>%
+  mutate(STEM_Status = factor(STEM_Status),   
+         Gender_Gap = round(coalesce(Male,0) - coalesce(Female,0),2))          
+
+#
+# Get the unique field areas being compared as part of Gender Gap.
+#
+unique_fields <- unique(rn2$Fld)
+
+#
+# Convert the unique fields into a data frame for display as a formatted table.
+#
+unique_fields_df <- data.frame(FieldArea = unique_fields)
+
+#
+# Rename the column from 'FieldArea' to 'Field Area'.
+#
+colnames(unique_fields_df)[colnames(unique_fields_df) == "FieldArea"] <- "Field Area"
+
+#
+# Calculate the summary statistics for gender gap by grouping by STEM_Status.
+# Apply multiple summary functions to 'Gender_Gap' using across within summarise.
+#   * ".x" represents the value of "Gender_Gap".
+#   * ".names = "{.fn}_Gender_Gap" creates the columns as Lower_Gender_Gap, and so on.
+#   * The results are rounded to 2 decimal places using round.
+#   * The Lower and Upper are capped at -100 and 100 using pmin and pmax. There's only 100% of something.
+#
+summary_stats <- rn2 %>%
+  group_by(STEM_Status) %>%
+  summarise(
+    across(
+      Gender_Gap, 
+      list(
+        Lower = ~round(pmax(min(.x, na.rm = TRUE), -100), 2),  # Ensure min is capped at -100
+        Upper = ~round(pmin(max(.x, na.rm = TRUE), 100), 2),   # Ensure max is capped at 100
+        Median = ~round(median(.x, na.rm = TRUE), 2),
+        Mean = ~round(mean(.x, na.rm = TRUE), 2)
+      ),
+      .names = "{.fn}_Gender_Gap"
+    )
+  )
+
+#
+# Calculate Q1 (25%) and Q3 (75%) for Gender_Gap grouped by STEM_Status.
+#
+iqr_stats <- rn2 %>%
+  group_by(STEM_Status) %>%
+  summarise(
+    Q1 = round(quantile(Gender_Gap, 0.25, na.rm = TRUE),2),
+    Q3 = round(quantile(Gender_Gap, 0.75, na.rm = TRUE),2)
+  )
+
+#
+# Australia only rows for visualising the Australia data:
+#   * Filter the Australian data.
+#   * Select the required columns.
+australia_data <- rn2 %>%
+  filter(Cntry == "Australia") %>%                                       
+  select(Cntry, Edctn_lvl, Fld, STEM_Status, Gender_Gap)                 
+
+#
+# Australia data table.
+#   * Rename columns for display in table.
+#   * Select the fields.
+#   * Sort the data by Field and Education_Level using arrange.
+#   * Display Field once per group using lag and mutate.
+#
+# The table is used to augment the figure by showing those 
+# rows where the gender gap is close to parity (|Gender Gap| <= 1).
+#
+australia_tab <- australia_data %>%
+  rename(Field = Fld,
+         Level = Edctn_lvl,
+         `Gender Gap` = Gender_Gap,
+         `Stem Status` = STEM_Status) %>%
+  arrange(`Stem Status`, Field, Level) %>%
+  mutate(
+    Field = ifelse(is.na(lag(Field)) | lag(Field) != Field, Field, "")
+  ) %>%
+  filter(abs(`Gender Gap`) <= 1) %>%
+  select( Field, `Stem Status`, Level, `Gender Gap`) 
+
 
 ```
-
-
 
 
 ## Visualisation
@@ -140,6 +286,141 @@ ggplot(filtered_data, aes(x = Year, y = Population_0to14, fill = Entity)) +
 
 ```
 
+
+```{r Figure-Gngp, warning=FALSE, fig.cap="World STEM Gender Gap(%)<br>(Based on 2015-2022 Data)", fig.topcaption=TRUE}
+
+#
+# Visualize the gender gap for STEM and non-STEM Vocations using a box plot using "geom_boxplot".
+#
+ggplot(rn2, aes(x = STEM_Status, y = Gender_Gap, fill = STEM_Status)) +
+  geom_boxplot() +
+  
+  # Display a circle at the lower and upper ends of the whiskers.
+  geom_point(
+    data = summary_stats,
+    aes(x = STEM_Status, y = Lower_Gender_Gap),
+    shape = 21,
+    fill = "red",
+    size = 4
+  ) +
+  geom_point(
+    data = summary_stats,
+    aes(x = STEM_Status, y = Upper_Gender_Gap),
+    shape = 21,
+    fill = "red",
+    size = 4
+  ) +
+  
+  # Display the lower and upper values.
+  geom_text(
+    data = summary_stats,
+    aes(x = STEM_Status, y = Lower_Gender_Gap, label = Lower_Gender_Gap),
+    vjust = 3,
+    size = 3
+  ) +
+  geom_text(
+    data = summary_stats,
+    aes(x = STEM_Status, y = Upper_Gender_Gap, label = Upper_Gender_Gap),
+    vjust = -1.5,
+    size = 3
+  ) +
+  
+  # Display the middle 50%.
+  geom_text(
+    data = iqr_stats, 
+    aes(x = STEM_Status, y = Q1, label = paste("Q1:", round(Q1, 2))),
+    hjust = 1.2, vjust = 2.0, color = "orange", size = 4
+  ) +
+  geom_text(
+    data = iqr_stats, 
+    aes(x = STEM_Status, y = Q3, label = paste("Q3:", round(Q3, 2))),
+    hjust = 1.5, vjust = -1.1, color = "orange", size = 4
+  ) +
+  
+  # Add mean value diamond.
+  geom_point(
+    data = summary_stats,
+    aes(x = STEM_Status, y = Mean_Gender_Gap, shape = "Mean"),
+    size = 3,
+    color = "red"
+  ) +
+  
+  labs(x = "Field Category", y = "Gender Gap (%) (Male - Female)") +
+  
+  # A legend for the mean value.
+  scale_shape_manual(name = "Statistics", values = c("Mean" = 18)) +
+  theme_minimal() +
+  
+  # Add call out boxes for the mean and median.
+  geom_label(data = summary_stats, 
+             aes(x = STEM_Status, y = Mean_Gender_Gap, label = paste("Mean: ", round(Mean_Gender_Gap, 2))),
+             color = "red", size = 4, label.padding = unit(0.5, "lines"), label.size = 0.5, 
+             vjust = 4.5, hjust = -0.2, fill = "white") +  # White background for the call out label.
+  geom_label(data = summary_stats, 
+             aes(x = STEM_Status, y = Median_Gender_Gap, label = paste("Median: ", round(Median_Gender_Gap, 2))),
+             color = "red", size = 4, label.padding = unit(0.5, "lines"), label.size = 0.5, 
+             vjust = 2.0, hjust = -0.2, fill = "white") +  # White background for the call out label.
+  
+  scale_fill_manual(values = c("STEM" = "lightblue", "OTHER" = "lightcoral")) +
+  theme(legend.title = element_blank()) +
+  scale_y_continuous(breaks = seq(-110, 40, by = 10)) +  # Adjust y-axis ticks.
+  expand_limits(y = c(40,-110)) +                        # Ensure that the plot expands to y = (-110,40). 
+  
+  theme(legend.title = element_blank())
+
+```
+
+```{r Figure-Astrl,warning=FALSE,fig.cap="Gender Gap in STEM Education <br>by<br> Field and Level in Australia (2015–2022)",fig.topcaption=TRUE}
+
+#
+# Create a bar chart for Australian STEM education.
+# (Useful information on colour: : https://www.r-bloggers.com/2013/09/how-to-expand-color-palette-with-ggplot-and-rcolorbrewer/).
+#
+ggplot(australia_data, aes(x = Fld, y = Gender_Gap, fill = Edctn_lvl)) +
+  geom_bar(stat = "identity", position = "stack", color = "black") + # Use position = "stack" for stacking
+  scale_fill_brewer(palette = "Set1") + # Distinct colors for education levels
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed", size = 1) + # Add parity line
+  scale_y_continuous(
+    limits = c(-10, 10), 
+    breaks = seq(-10, 10, by = 2) # Add more y-axis ticks
+  ) +
+  geom_text(
+   aes(
+    label = ifelse(abs(Gender_Gap) > 1.0, round(Gender_Gap, 2), "") # Display label only if Gender_Gap > 1.0
+  ),
+  position = position_stack(vjust = 0.5), # Center labels within segments
+  size = 1.8,
+  color = "black"
+)+
+  annotate(
+    "text", 
+    x = 3, y = 9, # Adjust the x and y positions as needed
+    label = "(Note: Only values with |Gender Gap| > 1.0 are labeled.)",
+    size = 1.5, 
+    hjust = 0, # Align text horizontally
+    color = "black"
+  )+
+  labs(
+    x = "Field of Education",
+    y = "Gender Gap (Male - Female) (%)",
+    fill = "Education Level"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = -45, 
+      hjust = 0, 
+      vjust = 0
+    ),
+    plot.margin = margin(t = 30, r = 10, b = 10, l = 15)
+  )
+
+```
+
+
+
+
+
 ## Tables
 
 ```{r table-HGrowth, warning=FALSE, tab.cap="Top 5 Countries with Highest Growth in Population Aged 65+.", tab.cap.style = "inline"}
@@ -188,50 +469,56 @@ kable(growth,
   )
 ```
 
-```{r}
 
-print(here::here("Scripts","custom.css"))
+```{r  table-FldCmpr, warning=FALSE, tab.cap="Fields Compared for Gender Gap(%) Analysis<br>(Based on 2015-2022 Data).", tab.cap.style = "inline"}
+
+#
+# Create the formatted table to show the list of education fields.
+# kable options:
+# Here is an explanation of the bootstrap options:
+#    striped: Adds alternating row colours, which improves readability, especially in long tables.
+#    hover: The rows will highlight when you hover over them, making it easier to track position in the table.
+#    condensed: The rows are more compact, reducing the vertical space between rows.
+# Other kable options:
+#    booktabs = TRUE, creates a cleaner, more professional table by replacing the default horizontal lines with well-spaced rules.
+#    align = "l", controls the alignment of the columns in the table. The value "l" stands for left alignment. Values can be lcr for left/centre/right.
+#    format = "html", the table will be rendered as an HTML table, which can be displayed in a browser.
+# kableExtra options:
+#    position = "center", the table will be horizontally centre-aligned within the available space.
+#    full_width = FALSE ensures the table doesn't stretch across the page, keeping it compact.
+# row_spec, used to align row 0 to the centre(align = "c"), which is the column label for the table. The column name ("Field Area") was left aligned by
+# the previous kable step used to left-align (align="l") the Fld text, which was globally applied. Also, the rows 5, 8, 9, 10 are italic and large 
+# font as these represent STEM areas.
+#
+knitr::kable(unique_fields_df,
+             booktabs = TRUE,
+             align = "l",
+             format = "html")  %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    position = "center",
+    full_width = FALSE
+  ) %>%
+  row_spec(row=0,align = "c") %>% 
+  row_spec(5, italic = TRUE, font_size = "large") %>%
+  row_spec(8, italic = TRUE, font_size = "large") %>%
+  row_spec(9, italic = TRUE, font_size = "large") %>%
+  row_spec(10,italic = TRUE, font_size = "large")
 
 ```
 
 
-```{r table-DTypes, warning=FALSE, tab.cap="Reduced Set of Interesting Column Names and <br> Data Types.", tab.cap.style = "inline"}
+```{r table-SmmrySttstcs, warning=FALSE, tab.cap="World STEM Gender Gap(%) Statistics<br>(Based on 2015-2022 Data).", tab.cap.style = "inline"}
 
 #
-# VC: Select the specific columns as there are a lot and only want the ones of interest.
+# Create the formatted table to show the summary statistics.
 #
-selected_columns <- c("Reference area", "Education level", "Field of education", "Sex")  
-
-#
-# VC: Extract the column names and data types.
-#
-selected_data_types <- sapply(d2[, selected_columns], class)
-
-
-#
-# VC: Display column names in a neat table format using kable.
-# Create a tibble with column names and their corresponding data types
-# for display.
-#
-cn2 <- tibble(
-  column_name = selected_columns,
-  data_type = selected_data_types
-)
-              
-#
-# Display column names and data types as a formatted table.
-# Requires the format parameter due to a known issue of double printing the "Table":
-#    https://github.com/haozhu233/kableExtra/issues/831
-#
-knitr::kable(
-  cn2,
-  col.names = c("Column Name", "Data Type"),
-  booktabs = TRUE, 
-  align = "c", 
-  format = "html"
-)  %>%
+knitr::kable(summary_stats,
+             booktabs = TRUE,
+             align = "c",
+             format = "html")  %>%
   kableExtra::kable_styling(
-    bootstrap_options = c("striped", "hover"),
+    bootstrap_options = c("striped", "hover", "condensed"),
     position = "center",
     full_width = FALSE
   )
@@ -239,7 +526,62 @@ knitr::kable(
 ```
 
 
-## Analysis
+```{r table-Astrltb, warning=FALSE, tab.cap="Gender Gap in STEM Education <br>by<br> Field and Level in Australia (2015–2022) that Approximates Parity", tab.cap.style = "inline"}
+
+knitr::kable(australia_tab,
+             booktabs = TRUE,
+             align = "l",
+             format = "html")  %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    position = "center",
+    full_width = FALSE
+  )%>%
+  row_spec(row=0,align = "c") 
+
+```
+
+
+```{r}
+# 
+# caption <- tags$div(
+#   tags$strong("Gender Gap Data for STEM Fields"),
+#   style = "text-align: center; margin-bottom: 10px;"
+# )
+# 
+# html_table <- australia_tab %>%
+#   kable(
+#     format = "html",
+#     col.names = c("Field", "Level", "STEM Status", "Gender Gap"),
+#     align = "lccc"
+#   ) %>%
+#   kable_styling(
+#     bootstrap_options = c("striped", "hover", "condensed"),
+#     full_width = F
+#   ) %>%
+#   scroll_box(width = "100%", height = "400px")
+# 
+# browsable(tagList(caption, html_table))
+```
+
+
+# Analysis
+
+### How does the gender gap in STEM education compare to other fields globally between 2015 and 2022?
+
+Figure \@ref(fig:Figure-Gngp) presents a box plot and statistical markers illustrating differences in gender gaps between STEM and OTHER fields.
+In STEM fields, the median gender gap is close to zero (`r as.numeric(summary_stats[summary_stats$STEM_Status == "STEM", "Median_Gender_Gap"])`), and the mean (`r as.numeric(summary_stats[summary_stats$STEM_Status == "STEM", "Mean_Gender_Gap"])`) skews slightly negative, indicating modest improvements in gender balance. The relatively narrow interquartile range (IQR), with Q3 (`r as.numeric(iqr_stats[iqr_stats$STEM_Status == "STEM", "Q3"])`) highlighting areas of male dominance and Q1 (`r as.numeric(iqr_stats[iqr_stats$STEM_Status == "STEM", "Q1"])`) reflecting progress in female representation, suggests reduced variability. However, the positive skewness of the box plot underscores persistent male dominance, particularly in disciplines like engineering and ICT.
+
+In contrast, OTHER fields display a more pronounced negative mean (`r as.numeric(summary_stats[summary_stats$STEM_Status == "OTHER", "Mean_Gender_Gap"])`) and median (`r as.numeric(summary_stats[summary_stats$STEM_Status == "OTHER", "Median_Gender_Gap"])`), indicating female-majority representation, for example, in disciplines such as health and social sciences. The broader IQR, spanning Q1 (`r as.numeric(iqr_stats[iqr_stats$STEM_Status == "OTHER", "Q1"])`) to Q3 (`r as.numeric(iqr_stats[iqr_stats$STEM_Status == "OTHER", "Q3"])`), suggests more significant variability in gender representation, with a notable skew toward female dominance.
+
+Additionally, the extremes in Table \@ref(tab:table-SmmrySttstcs) reveal significant male dominance in STEM (`r gsub(" ", "",paste("Upper:",as.numeric(summary_stats[summary_stats$STEM_Status == "STEM", "Upper_Gender_Gap"]),"%"))`) and instances of female-majority representation (`r gsub(" ", "",paste("Lower:",as.numeric(summary_stats[summary_stats$STEM_Status == "STEM", "Lower_Gender_Gap"]),"%"))`), with narrower variability than in OTHER fields. OTHER fields show broader extremes (`r gsub(" ", "",paste(as.numeric(summary_stats[summary_stats$STEM_Status == "OTHER", "Upper_Gender_Gap"]),"%"))` to `r gsub(" ", "",paste(as.numeric(summary_stats[summary_stats$STEM_Status == "OTHER", "Lower_Gender_Gap"]),"%"))`), reflecting greater gender diversity.  These extremes are visualized in Figure \@ref(fig:Figure-Gngp) as red circles. These findings underscore the persistent underrepresentation of females in STEM and the critical need for targeted strategies to close the gender gap and foster equity in STEM occupations.
+
+### How does gender parity in STEM education compare to non-STEM fields in Australia across different levels and fields from 2015 to 2022?
+
+
+
+
+## Analysis-Dhanya
 
 
 ###### Figure 1: Population Aged 65+ for Selected Countries (1950-2020)
@@ -274,4 +616,7 @@ Pletcher, K. (2024). China's one-child policy and its effects. Encyclopaedia Bri
 
 United Nations Department of Economic and Social Affairs. (2023). World population prospects. Retrieved from https://population.un.org
 
-# Referrences
+
+
+
+# References
