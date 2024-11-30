@@ -5,3 +5,6 @@
 *.zip
 *.txt
 *.csv
+
+Scripts/assignment_2_conflict_merge.Rmd
+Scripts/assignment_2_conflict_merge2.Rmd
