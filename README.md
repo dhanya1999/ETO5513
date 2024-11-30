@@ -1,4 +1,4 @@
-# ETO5513
+# ETO5513 
 
 This R report examines the evolution of gender gaps in education, from primary to tertiary levels, through historical and modern contexts, analyzing regional progress, policy impacts, and links to socioeconomic development. It highlights global trends and contrasts between developed and developing countries and explores STEM-specific disparities, including Australia’s gender parity across STEM and non-STEM fields.
 
@@ -21,3 +21,10 @@ The following directories and files are required to make this R report work:
 
 **Notes:**  
 
+
+
+| Date     | Comment         | Who        | 
+|:---------|:----------------|:-----------|
+| 30/11/24 | Initial.        | V.Currie   | 
+|          |                 |            |
+|          |                 |            |
