@@ -1,4 +1,15 @@
-/* Unified table styling */
+/* Add wrapper for scrollable tables */
+
+.table-wrapper {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+  max-width: 100%;   /* Limit width to prevent horizontal overflow */
+  max-height: 400px; /* Set a max height for vertical scrolling */
+  margin-bottom: 20px; /* Space below the table */
+  padding: 10px;
+  background-color: #f9f9f9; /* Optional: Background color to distinguish the wrapper */
+}
+
 /*The table, th, and td rules add a unified 1-pixel black border and collapse the borders, making the table clean and clear.*/
 table {
   border: 1px solid black;

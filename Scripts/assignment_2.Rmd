@@ -25,7 +25,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 
 ```{r Libs, include=FALSE}
 #
-# VC:
+# 
 # Load necessary libraries.
 #
 library(dplyr)
@@ -50,6 +50,7 @@ library(ggrepel)
 
 ## Research Question
 
+
 ### How does the gender gap in STEM education compare to other fields globally between 2015 and 2022?
 
 This analysis draws on data from the @RN21 to examine gender disparities in education, focusing on the number of enrolled students, new entries, and graduates. It assesses female representation in STEM fields relative to other areas, aiming to determine whether STEM fields experience a shortfall of females. The source data is available [here](https://data-explorer.oecd.org/vis?fs[0]=Topic%2C1%7CEducation%20and%20skills%23EDU%23%7CStudents%23EDU_STU%23&pg=0&fc=Topic&bp=true&snb=31&df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_EAG_UOE_NON_FIN_STUD%40DF_UOE_NF_DIST_FIELD&df[ag]=OECD.EDU.IMEP&df[vs]=1.0&dq=.ISCED11_5T8%2BISCED11_5%2BISCED11_6%2BISCED11_7%2BISCED11_8.GRAD...F00%2BF01%2BF02%2BF03%2BF04%2BF05%2BF06%2BF07%2BF08%2BF09%2BF10%2B_TX_U..A...._T.._T.&pd=2015%2C&to[TIME_PERIOD]=false&ly[cl]=EDUCATION_FIELD%2CTIME_PERIOD&ly[rs]=EDUCATION_LEV&ly[rw]=REF_AREA&vw=tb).
@@ -69,12 +70,14 @@ The analysis calculates the gender gap as the difference between the number of m
 #
 fp1 <- here("Data", "population-young-working-elderly.csv")
 
+
 #
 # Load the Population Young Working Elderly CSV file.
 #
 d1 <- read_csv(fp1, show_col_types = FALSE)
 
 #
+
 # Set the relative file path (assuming the file is in the 'Data' directory).
 # Use here() to specify the relative file path using the root of the R project 
 # (where the .Rproj file is located).
@@ -417,10 +420,6 @@ ggplot(australia_data, aes(x = Fld, y = Gender_Gap, fill = Edctn_lvl)) +
 
 ```
 
-
-
-
-
 ## Tables
 
 ```{r table-HGrowth, warning=FALSE, tab.cap="Top 5 Countries with Highest Growth in Population Aged 65+.", tab.cap.style = "inline"}
@@ -518,7 +517,50 @@ knitr::kable(summary_stats,
              align = "c",
              format = "html")  %>%
   kableExtra::kable_styling(
-    bootstrap_options = c("striped", "hover", "condensed"),
+    bootstrap_options = c("striped", "hover", "condensed"),    
+    position = "center",
+    full_width = FALSE
+  )
+
+```
+
+```{r table-DTypes, warning=FALSE, tab.cap="Reduced Set of Interesting Column Names and <br> Data Types.", tab.cap.style = "inline"}
+
+#
+# VC: Select the specific columns as there are a lot and only want the ones of interest.
+#
+selected_columns <- c("Reference area", "Education level", "Field of education", "Sex")  
+
+#
+# VC: Extract the column names and data types.
+#
+selected_data_types <- sapply(d2[, selected_columns], class)
+
+
+#
+# VC: Display column names in a neat table format using kable.
+# Create a tibble with column names and their corresponding data types
+# for display.
+#
+cn2 <- tibble(
+  column_name = selected_columns,
+  data_type = selected_data_types
+)
+              
+#
+# Display column names and data types as a formatted table.
+# Requires the format parameter due to a known issue of double printing the "Table":
+#    https://github.com/haozhu233/kableExtra/issues/831
+#
+knitr::kable(
+  cn2,
+  col.names = c("Column Name", "Data Type"),
+  booktabs = TRUE, 
+  align = "c", 
+  format = "html"
+)  %>%
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover"),
     position = "center",
     full_width = FALSE
   )
@@ -542,29 +584,6 @@ knitr::kable(australia_tab,
 ```
 
 
-```{r}
-# 
-# caption <- tags$div(
-#   tags$strong("Gender Gap Data for STEM Fields"),
-#   style = "text-align: center; margin-bottom: 10px;"
-# )
-# 
-# html_table <- australia_tab %>%
-#   kable(
-#     format = "html",
-#     col.names = c("Field", "Level", "STEM Status", "Gender Gap"),
-#     align = "lccc"
-#   ) %>%
-#   kable_styling(
-#     bootstrap_options = c("striped", "hover", "condensed"),
-#     full_width = F
-#   ) %>%
-#   scroll_box(width = "100%", height = "400px")
-# 
-# browsable(tagList(caption, html_table))
-```
-
-
 # Analysis
 
 ### How does the gender gap in STEM education compare to other fields globally between 2015 and 2022?
@@ -582,6 +601,8 @@ Additionally, the extremes in Table \@ref(tab:table-SmmrySttstcs) reveal signifi
 
 
 ## Analysis-Dhanya
+
+## Analysis
 
 
 ###### Figure 1: Population Aged 65+ for Selected Countries (1950-2020)
@@ -617,6 +638,4 @@ Pletcher, K. (2024). China's one-child policy and its effects. Encyclopaedia Bri
 United Nations Department of Economic and Social Affairs. (2023). World population prospects. Retrieved from https://population.un.org
 
 
-
-
-# References
+# Referances

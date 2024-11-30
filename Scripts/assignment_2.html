@@ -1758,7 +1758,7 @@ margin-left: 2em;
 }
 </style>
 
-<style type="text/css">table {border: 1px solid black;border-collapse: collapse;}th, td {border: 1px solid black;}caption {font-weight: bold;font-size: 16px;color: #333333;text-align: center;padding: 8px 0;}figure {display: inline-block; text-align: center;border: 1px solid black;padding: 10px;margin: 20px auto;}figcaption {font-weight: bold;font-size: 16px;color: #333333;text-align: center;margin-bottom: 10px; }p.caption {font-weight: bold;font-size: 16px; color: #333333; text-align: center; margin-top: 10px; margin-bottom: 10px; }figure img {display: block;margin: 0 auto; border: 1px solid black;padding: 5px;}</style>
+<style type="text/css">.table-wrapper {overflow-x: auto; overflow-y: auto; max-width: 100%; max-height: 400px; margin-bottom: 20px; padding: 10px;background-color: #f9f9f9; }table {border: 1px solid black;border-collapse: collapse;}th, td {border: 1px solid black;}caption {font-weight: bold;font-size: 16px;color: #333333;text-align: center;padding: 8px 0;}figure {display: inline-block; text-align: center;border: 1px solid black;padding: 10px;margin: 20px auto;}figcaption {font-weight: bold;font-size: 16px;color: #333333;text-align: center;margin-bottom: 10px; }p.caption {font-weight: bold;font-size: 16px; color: #333333; text-align: center; margin-top: 10px; margin-bottom: 10px; }figure img {display: block;margin: 0 auto; border: 1px solid black;padding: 5px;}</style>
 
 
 
@@ -1857,7 +1857,7 @@ display: none;
 
 <h1 class="title toc-ignore">Analysis of Population Dynamics by Age Groups and Regions</h1>
 <h4 class="author">Bailey Dalton, Dhanya Dharshini Veeraraghavan, Vincent Currie</h4>
-<h4 class="date">29-NOV-2024</h4>
+<h4 class="date">30-NOV-2024</h4>
 
 </div>
 
@@ -1876,10 +1876,11 @@ display: none;
 <li><a href="#how-does-the-gender-gap-in-stem-education-compare-to-other-fields-globally-between-2015-and-2022-1" id="toc-how-does-the-gender-gap-in-stem-education-compare-to-other-fields-globally-between-2015-and-2022-1"><span class="toc-section-number">1.0.1</span> How does the gender gap in STEM education compare to other fields globally between 2015 and 2022?</a></li>
 <li><a href="#how-does-gender-parity-in-stem-education-compare-to-non-stem-fields-in-australia-across-different-levels-and-fields-from-2015-to-2022-1" id="toc-how-does-gender-parity-in-stem-education-compare-to-non-stem-fields-in-australia-across-different-levels-and-fields-from-2015-to-2022-1"><span class="toc-section-number">1.0.2</span> How does gender parity in STEM education compare to non-STEM fields in Australia across different levels and fields from 2015 to 2022?</a></li>
 <li><a href="#analysis-dhanya" id="toc-analysis-dhanya"><span class="toc-section-number">1.1</span> Analysis-Dhanya</a></li>
-<li><a href="#conclusion---append-this-to-final-conclusion" id="toc-conclusion---append-this-to-final-conclusion"><span class="toc-section-number">1.2</span> Conclusion - Append this to final conclusion:</a></li>
-<li><a href="#references" id="toc-references"><span class="toc-section-number">1.3</span> References</a></li>
+<li><a href="#analysis-1" id="toc-analysis-1"><span class="toc-section-number">1.2</span> Analysis</a></li>
+<li><a href="#conclusion---append-this-to-final-conclusion" id="toc-conclusion---append-this-to-final-conclusion"><span class="toc-section-number">1.3</span> Conclusion - Append this to final conclusion:</a></li>
+<li><a href="#references" id="toc-references"><span class="toc-section-number">1.4</span> References</a></li>
 </ul></li>
-<li><a href="#references-1" id="toc-references-1">References</a></li>
+<li><a href="#referances" id="toc-referances">Referances</a></li>
 </ul>
 </div>
 
@@ -1907,12 +1908,14 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE)</code></pre>
 #
 fp1 &lt;- here(&quot;Data&quot;, &quot;population-young-working-elderly.csv&quot;)
 
+
 #
 # Load the Population Young Working Elderly CSV file.
 #
 d1 &lt;- read_csv(fp1, show_col_types = FALSE)
 
 #
+
 # Set the relative file path (assuming the file is in the &#39;Data&#39; directory).
 # Use here() to specify the relative file path using the root of the R project 
 # (where the .Rproj file is located).
@@ -2600,7 +2603,7 @@ knitr::kable(summary_stats,
              align = &quot;c&quot;,
              format = &quot;html&quot;)  %&gt;%
   kableExtra::kable_styling(
-    bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;),
+    bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;),    
     position = &quot;center&quot;,
     full_width = FALSE
   )</code></pre>
@@ -2664,6 +2667,93 @@ STEM
 </tr>
 </tbody>
 </table>
+<pre class="r"><code>#
+# VC: Select the specific columns as there are a lot and only want the ones of interest.
+#
+selected_columns &lt;- c(&quot;Reference area&quot;, &quot;Education level&quot;, &quot;Field of education&quot;, &quot;Sex&quot;)  
+
+#
+# VC: Extract the column names and data types.
+#
+selected_data_types &lt;- sapply(d2[, selected_columns], class)
+
+
+#
+# VC: Display column names in a neat table format using kable.
+# Create a tibble with column names and their corresponding data types
+# for display.
+#
+cn2 &lt;- tibble(
+  column_name = selected_columns,
+  data_type = selected_data_types
+)
+              
+#
+# Display column names and data types as a formatted table.
+# Requires the format parameter due to a known issue of double printing the &quot;Table&quot;:
+#    https://github.com/haozhu233/kableExtra/issues/831
+#
+knitr::kable(
+  cn2,
+  col.names = c(&quot;Column Name&quot;, &quot;Data Type&quot;),
+  booktabs = TRUE, 
+  align = &quot;c&quot;, 
+  format = &quot;html&quot;
+)  %&gt;%
+  kableExtra::kable_styling(
+    bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;),
+    position = &quot;center&quot;,
+    full_width = FALSE
+  )</code></pre>
+<table class="table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:table-DTypes">Table 0.5: </span>Reduced Set of Interesting Column Names and <br> Data Types.
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;">
+Column Name
+</th>
+<th style="text-align:center;">
+Data Type
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Reference area
+</td>
+<td style="text-align:center;">
+character
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Education level
+</td>
+<td style="text-align:center;">
+character
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Field of education
+</td>
+<td style="text-align:center;">
+character
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sex
+</td>
+<td style="text-align:center;">
+character
+</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>knitr::kable(australia_tab,
              booktabs = TRUE,
              align = &quot;l&quot;,
@@ -2676,7 +2766,7 @@ STEM
   row_spec(row=0,align = &quot;c&quot;) </code></pre>
 <table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:table-Astrltb">Table 0.5: </span>Gender Gap in STEM Education <br>by<br> Field and Level in Australia (2015–2022) that Approximates Parity
+<span id="tab:table-Astrltb">Table 0.6: </span>Gender Gap in STEM Education <br>by<br> Field and Level in Australia (2015–2022) that Approximates Parity
 </caption>
 <thead>
 <tr>
@@ -2882,25 +2972,6 @@ Tertiary education
 </tr>
 </tbody>
 </table>
-<pre class="r"><code># 
-# caption &lt;- tags$div(
-#   tags$strong(&quot;Gender Gap Data for STEM Fields&quot;),
-#   style = &quot;text-align: center; margin-bottom: 10px;&quot;
-# )
-# 
-# html_table &lt;- australia_tab %&gt;%
-#   kable(
-#     format = &quot;html&quot;,
-#     col.names = c(&quot;Field&quot;, &quot;Level&quot;, &quot;STEM Status&quot;, &quot;Gender Gap&quot;),
-#     align = &quot;lccc&quot;
-#   ) %&gt;%
-#   kable_styling(
-#     bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;),
-#     full_width = F
-#   ) %&gt;%
-#   scroll_box(width = &quot;100%&quot;, height = &quot;400px&quot;)
-# 
-# browsable(tagList(caption, html_table))</code></pre>
 </div>
 <div id="analysis" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Analysis</h1>
@@ -2916,29 +2987,32 @@ In STEM fields, the median gender gap is close to zero (-1.33), and the mean (-3
 </div>
 <div id="analysis-dhanya" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> Analysis-Dhanya</h2>
-<div id="figure-1-population-aged-65-for-selected-countries-1950-2020" class="section level6" number="1.1.0.0.0.1">
-<h6><span class="header-section-number">1.1.0.0.0.1</span> Figure 1: Population Aged 65+ for Selected Countries (1950-2020)</h6>
+</div>
+<div id="analysis-1" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Analysis</h2>
+<div id="figure-1-population-aged-65-for-selected-countries-1950-2020" class="section level6" number="1.2.0.0.0.1">
+<h6><span class="header-section-number">1.2.0.0.0.1</span> Figure 1: Population Aged 65+ for Selected Countries (1950-2020)</h6>
 <p>This chart highlights the rapid growth of elderly populations in selected countries. China shows the steepest increase due to improved healthcare and longer life expectancy <span class="citation">(World Bank, 2023)</span>. Japan’s sharp rise post-1970 reflects its aging crisis caused by low fertility and high longevity, leading to challenges in sustaining healthcare and pensions <span class="citation">(OECD, 2023)</span>. India’s slower growth suggests it remains in an earlier demographic stage, while the United States and Australia exhibit steady but less pronounced growth.</p>
 </div>
-<div id="figure-2-population-aged-0-14-for-selected-countries-1950-2020" class="section level6" number="1.1.0.0.0.2">
-<h6><span class="header-section-number">1.1.0.0.0.2</span> Figure 2: Population Aged 0-14 for Selected Countries (1950-2020)</h6>
+<div id="figure-2-population-aged-0-14-for-selected-countries-1950-2020" class="section level6" number="1.2.0.0.0.2">
+<h6><span class="header-section-number">1.2.0.0.0.2</span> Figure 2: Population Aged 0-14 for Selected Countries (1950-2020)</h6>
 <p>India retains the largest 0-14 population due to high fertility rates <span class="citation">(UNICEF, 2024)</span>. In contrast, China’s decline post-1970s aligns with its one-child policy <span class="citation">(Pletcher, K., 2024)</span>. Developed nations like the United States, Japan, and Australia show consistent declines, reflecting lower birth rates and the challenges of maintaining a sustainable workforce in aging populations.</p>
 </div>
-<div id="table-1-top-5-countries-with-highest-growth-in-population-aged-65" class="section level6" number="1.1.0.0.0.3">
-<h6><span class="header-section-number">1.1.0.0.0.3</span> Table 1: Top 5 Countries with Highest Growth in Population Aged 65+</h6>
+<div id="table-1-top-5-countries-with-highest-growth-in-population-aged-65" class="section level6" number="1.2.0.0.0.3">
+<h6><span class="header-section-number">1.2.0.0.0.3</span> Table 1: Top 5 Countries with Highest Growth in Population Aged 65+</h6>
 <p>China, India, and Japan lead in growth, driven by rising life expectancies and large populations (UN DESA, 2023). Brazil and Russia follow, reflecting similar aging trends in emerging economies as they transition demographically.</p>
 </div>
-<div id="table-2-top-5-countries-with-highest-growth-in-population-aged-0-14" class="section level6" number="1.1.0.0.0.4">
-<h6><span class="header-section-number">1.1.0.0.0.4</span> Table 2: Top 5 Countries with Highest Growth in Population Aged 0-14</h6>
+<div id="table-2-top-5-countries-with-highest-growth-in-population-aged-0-14" class="section level6" number="1.2.0.0.0.4">
+<h6><span class="header-section-number">1.2.0.0.0.4</span> Table 2: Top 5 Countries with Highest Growth in Population Aged 0-14</h6>
 <p>India, Nigeria, and Pakistan dominate, driven by high fertility rates in developing nations. Indonesia’s rise signals Southeast Asia’s growing youth population, while China’s moderated growth reflects earlier demographic trends during its high-fertility era.</p>
 </div>
 </div>
-<div id="conclusion---append-this-to-final-conclusion" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> Conclusion - Append this to final conclusion:</h2>
+<div id="conclusion---append-this-to-final-conclusion" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> Conclusion - Append this to final conclusion:</h2>
 <p>These trends illustrate aging challenges in developed nations and youth-driven opportunities in developing regions. Targeted policies in healthcare, education, and economic planning are essential to manage these demographic shifts effectively.</p>
 </div>
-<div id="references" class="section level2" number="1.3">
-<h2><span class="header-section-number">1.3</span> References</h2>
+<div id="references" class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> References</h2>
 <p>World Bank. (2023). Population and demographic indicators. Retrieved from <a href="https://www.worldbank.org" class="uri">https://www.worldbank.org</a></p>
 <p>OECD. (2023). The silver economy: Policies for an aging society. Retrieved from <a href="https://www.oecd.org" class="uri">https://www.oecd.org</a></p>
 <p>UNICEF. (2024). State of the world’s children. Retrieved from <a href="https://www.unicef.org" class="uri">https://www.unicef.org</a></p>
@@ -2946,8 +3020,8 @@ In STEM fields, the median gender gap is close to zero (-1.33), and the mean (-3
 <p>United Nations Department of Economic and Social Affairs. (2023). World population prospects. Retrieved from <a href="https://population.un.org" class="uri">https://population.un.org</a></p>
 </div>
 </div>
-<div id="references-1" class="section level1 unnumbered">
-<h1>References</h1>
+<div id="referances" class="section level1 unnumbered">
+<h1>Referances</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
 <div id="ref-RN17" class="csl-entry">
 OECD. (2023). <em>The silver economy: Policies for an aging society</em>. <a href="https://www.oecd.org">https://www.oecd.org</a>
