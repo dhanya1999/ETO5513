@@ -27,30 +27,35 @@ data <- read.csv("Data/population-young-working-elderly.csv")
 
 # Group Section - Introduction 
 
+This report examines the evolution of gender gaps in education, from primary to tertiary levels, through historical and modern contexts, analysis regional progress, policy impacts and links to socioeconomic development. It highlights global trends and contrasts between developed and developing countries and explores STEM-specific disparities, including Australia’s gender disparity across STEM and non-STEM fields. 
 
-# Research Questions - to asnwer in each analysis 
+### Research Questions: 
 
-#### * Bailey Research Questions:
-  * How has the population distribution across continents changed over the decades, particularly in terms of different age groups, and what are the potential causes and implications of these trends?
-  
-  * How has a region's economic development influenced population changes over time? Specifically, what are the population trends from 1950 to 2020 in low, medium, and high economic regions in each age group (youth, working and elderly)?"
+This report examines global population trends and the gender gap in STEM education, with a focus on specific regions and age groups.
 
+Each member and the research questions they have answered in their analysis are listed below: 
 
-#### * Vincent Research Questions:
-  * 1. How does the gender gap in STEM (Science, Technology, Engineering, and Mathematics) education compare to other fields of study? 
-  * 2.  What policies or factors have contributed to significant reductions in educational gender gaps?
+Dhanya Dharshin: 
+•	How has the population aged 65+ evolved globally over the past few decades, and what regions show the fastest growth in this age group?
+•	What is the trend in the 0-14 age group population across different regions, and how does it reflect changes in birth rates or youth demographics?
 
+Bailey Dalton: 
 
+•	How has the population distribution across continents changed over the decades, particularly in terms of different age groups, and what are the potential causes and implications of these trends?
+•	How has a region’s economic development influenced population changes over time? Specifically, what are the population trends from 1950 to 2020 in low, medium, and high economic regions in each age group (youth, working and elderly)?
 
-#### * Dhanya Reserach Questoins: 
-  * How has the population aged 65+ evolved globally over the past few decades, and what regions show the fastest growth in this age group?  
-    - Aging populations are growing faster in developed countries due to higher life expectancy and declining fertility rates.
-    - Certain developing countries may show a recent sharp increase, indicating early stages of demographic transition.
-    - Regional differences highlight the need for targeted healthcare and social support systems.
+Vincent Currie: 
 
-  * What is the trend in the 0-14 age group population across different regions, and how does it reflect changes in birth rates or youth demographics?  
-    - Declining trends in 0-14 populations in developed regions suggest falling birth rates, often associated with economic development and urbanization.
-    - Regions with stable or growing 0-14 populations indicate continued high fertility rates, potentially creating future workforce surges.
+•	How does the gender gap in STEM (Science, Technology, Engineering, and Mathematics) education compare to other fields of study?
+•	What policies or factors have contributed to significant reductions in educational gender gaps?
+
+Dhanya Dharshini explores the evolution of the 65+ population and trends in the 0-14 age group, highlighting demographic shifts. Bailey Dalton investigates how economic development influences population changes across different regions, analyzing trends from 1950 to 2020 in low, medium, and high-income countries. Vince Currie examines gender disparities in STEM education, comparing them to other fields and identifying policies that have reduced these gaps. The findings provide a comprehensive understanding of these key research questions and their broader implications.
+
+### Data Introduction
+
+The data utilised in this report was retrived from two sections of [Our World in Data](https://ourworldindata.org/). The first data set from _Population of young, working-age and elderly_ containing populatio recordings over the time period of 1950 to 2023 for various regions around the globe and is available here - [data1](https://ourworldindata.org/grapher/population-young-working-elderly-with-projections.csv?v=1&csvType=full&useColumnShortNames=true). The second data source used is from  _Population and Demographic Change_ and contains information about enrolment ratios for differing educatino levels around the world by gender and is available here - [data2](https://ourworldindata.org/grapher/gender-gap-education-levels.csv?v=1&csvType=full&useColumnShortNames=true) chart found in the topic on [Our World in Data](https://ourworldindata.org/). 
+
+The dataset includes thousands of observations across many countries around the wold and through multiple decades. The variables in the dataset provide insights into the economic and demographic factors that influence life expectancy globally.
 
 
 
@@ -308,8 +313,6 @@ Economic_pop_data_combined %>%
 Figure \@ref(fig:ContinentPlot) shows population growth trends have varied significantly across continents from 1950 to 2020. Africa experienced the highest growth rate, with an annual growth rate of `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Annual Growth Rate"]`, while Europe saw the lowest at `r continent_TabData[continent_TabData$Entity == "Europe (UN)", "Annual Growth Rate"]` seen in \@ref(tab:Continent-summary). Africa’s population grew from `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Population 1950"]` to `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Population 2020"]` (1.38 billion), with a young demographic, as the percentage of those aged 65+ remained low. In contrast, Europe’s elderly population increased significantly, from `r continent_TabData[continent_TabData$Entity == "Europe (UN)", "Percentage Population Aged 65+ in 1950"]` in 1950 to `r continent_TabData[continent_TabData$Entity == "Europe (UN)", "Percentage Population Aged 65+ in 2020"]` in 2020, reflecting higher life expectancy and lower birth rates. Asia, while seeing moderate growth in its elderly population (up 5%), maintains a large working-age population. Across all continents, the percentage of those aged 0-14 declined, indicating lower birth rates. These trends are driven by factors like improved healthcare, lower fertility rates, and urbanization. These demographic shifts present challenges for economic growth, healthcare systems, and social services, highlighting the need for targeted policies addressing aging populations and youth employment (Lutz and KC, 2010). 
   
   * **How has a region's economic development influenced population changes over time? Specifically, what are the population trends from 1950 to 2020 in low, medium, and high economic regions in each age group (youth, working and elderly)?"**
-
-The area chart depicted in \@ref(fig:EcoP) shows how population has changed over time for various socio-economic regions. from this we can see that areas of low-income have extremely small population growth in the age group 65+,  that areas of low income may have decreased life expectancy. \@ref(tab:SocioEco) shows that populations in low-income regions from 1950 to 2020, in the 65+ age group population decreased in percentage from `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "1950 (%)", "0-14_Upper-middle-income countries"]` to `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "2020 (%)", "0-14_Upper-middle-income countries"]` respectively while in regions of high-income the percentage of population aged 65+ has increased from `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "1950 (%)", "65+_High-income countries"]` to `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "2020 (%)", "65+_High-income countries"]`. This suggests that areas of higher socio-economic status elderly population is increasing while areas of lower economic status are decreasing, likely due to the discrepancy in educaiton levels and other socio-economic factors influencing life expectancy. 
 
 The area chart in \@ref(fig:EcoP) and table \@ref(tab:SocioEco) show that low-income regions have experienced minimal growth in the 65+ age group, with its percentage slightly declining from `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "1950 (%)", "0-14_Low-income countries"]` in 1950 to `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "2020 (%)", "0-14_Low-income countries"]` in 2020. This likely reflects lower life expectancy and limited healthcare (Lutz and KC, 2010). In contrast, high-income regions saw the elderly population grow from `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "1950 (%)", "65+_High-income countries"]` to  in 1950 to `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "2020 (%)", "65+_High-income countries"]` in 2020, indicating better healthcare and longevity. Additionally, both regions saw declines in youth populations, while working-age populations have expanded, especially in high-income areas, highlighting broader demographic shifts driven by economic development.
 
