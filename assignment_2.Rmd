@@ -2,7 +2,8 @@
 title: "Analysis of Population Dynamics by Age Groups and Regions"
 author: "Bailey Dalton, Dhanya Dharshini Veeraraghavan, Vincent Currie"
 date: "2024-11-20"
-output: html_document
+output: 
+  bookdown::html_document2:
 ---
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 # Load necessary libraries
@@ -13,6 +14,7 @@ library(tidyr)
 library(plotly)
 library(scales)
 library(kableExtra)
+library(bookdown)
 ```
 
 ## Data Preperation
@@ -29,7 +31,8 @@ data <- read.csv("Data/population-young-working-elderly.csv")
 # Research Questions - to asnwer in each analysis 
 
 #### * Bailey Research Questions:
-  * How has population changed through the decades in each continent and what might this suggest about countries socioeconomic status? 
+  * How has the population distribution across continents changed over the decades, particularly in terms of different age groups, and what are the potential causes and implications of these trends?
+  
   * How has a region's economic development influenced population changes over time? Specifically, what are the population trends from 1950 to 2020 in low, medium, and high economic regions in each age group (youth, working and elderly)?"
 
 
@@ -83,7 +86,7 @@ data1 <- data1 %>%
 
 ### Figure 1 - How has the population changed over the decades for each continent 
 
-```{r Fig 1 ContinentPop, echo = TRUE, eval = TRUE, fig.align='center', fig.cap="Figure 1: Column chart comparing population growth across continents from 1950 to 2020.", out.width= "80%", message = FALSE, warning = FALSE,}
+```{r ContinentPlot, echo = TRUE, eval = TRUE, fig.align='center', fig.cap="Figure 1: Column chart comparing population growth across continents from 1950 to 2020.", out.width= "80%", message = FALSE, warning = FALSE,}
 Continent_data <- data1 %>% 
   filter(Entity %in% c("Africa (UN)", 
                        "Americas (UN)", 
@@ -99,7 +102,7 @@ ggplot(Continent_data, aes(x = Year, y = Population, color = Entity)) +
   theme(legend.position = "none") + 
   scale_y_continuous(labels = label_number(scale = 1e-6, suffix = "M")) + 
   labs(
-    title = "Continental population growth from 1950-2020",
+    title = "Continental population growth from 1950-2023",
     x = "Year", 
     y = "Population",
   ) + 
@@ -111,7 +114,7 @@ ggplot(Continent_data, aes(x = Year, y = Population, color = Entity)) +
 ### Table 1 - continents population changes over decades 
 
 
-```{r Table 1 Continent-summary, echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+```{r Continent-summary, echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
 # Create table from continent data 
 continent_TabData <- Continent_data %>%
   # filter for years at the start of each decade 
@@ -133,7 +136,7 @@ continent_TabData <- Continent_data %>%
   mutate(
     # format population to million
     "Population 1950" = label_number(scale = 1e-6, suffix = "M", accuracy = 0.1)(`Population 1950`), 
-    "Population 2020" = label_number(scale = 1e-6, suffic = "M", accurage = 0.1)(`Population 2020`),
+    "Population 2020" = label_number(scale = 1e-6, suffix = "M", accuracy = 0.1)(`Population 2020`),
     # Format percentages to 2 decimal places with % symbol 
     "Annual Growth Rate" = paste0(round(`Annual Growth Rate`, 2), "%"),
     "Percentage Population Aged 0-14 in 1950" = paste0(round(`Percentage Population Aged 0-14 in 1950`, 2), "%"),
@@ -145,7 +148,7 @@ continent_TabData <- Continent_data %>%
   )
 
 # Create and format summary table for continent data 
-kable(continent_TabData, 
+knitr::kable(continent_TabData, 
       caption = "Table 1: Continental population statistics, including populations in 1950 and 2020, growth rates, and age group percentages at both years."
       ) %>% 
   column_spec(1, bold = TRUE) %>%   # Bold first column 
@@ -156,7 +159,7 @@ kable(continent_TabData,
 
 ### Figure 2: 
 
-```{r Fig 2 EconomicPop, echo = TRUE, eval = TRUE, fig.align='center', fig.cap="Figure 2: Area chart illustrating population growth trends across economic regions and age groups.", out.width= "80%", message = FALSE, warning = FALSE,}
+```{r EcoP, echo = TRUE, eval = TRUE, fig.align='center', fig.cap="Figure 2: Area chart illustrating population growth trends across economic regions and age groups.", out.width= "80%", message = FALSE, warning = FALSE,}
 # create data frame for population dev data (socioeco status regions) from data
 Population_DevelopmentData <- data1 %>% 
   filter(Entity %in% c("Low-income countries", 
@@ -197,7 +200,7 @@ ggplot(Population_DevelopmentData, aes(x = Year, y = Population, fill = AgeGroup
 
 ### Table 2: 
 
-```{r Table 2 SocioEco, echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
+```{r SocioEco, echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE}
 # Rectrieve socioEco from figure 2, data cleanup for table 
 Economic_Popdata1 <- Population_DevelopmentData %>% 
   filter(Year %in% c(1950, 1985, 2020)) %>% 
@@ -279,13 +282,23 @@ Economic_pop_data_combined %>%
                      "Low-income Countries" = 3, 
                      "Lower-middle-income Countries" = 3, 
                      "Upper-middle-income Countries" = 3, 
-                     "High-income Countries" = 3))
+                     "High-income Countries" = 3))  
 ```
 
 
 ### Bailey - analysis 
 
+* **How has population changed through the decades in each continent and what might be the causes for various population trends in the different continents?**
 
+Figure \@ref(fig:ContinentPlot) presents a column graph that tracks the population changes across continents from 1950 to 2023. The data reveals several key trends such as Africa having the highest rate of population growth in this period and Europe the lowest. Other notable observations from \@ref(fig:ContinentPlot) include alarming population size in Asia exceeding 4.5 billion. 
+
+Table \@ref(tab:Continent-summary) confirms Africas largest rate of population growth calculated as AGR at `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Annual Growth Rate"]`. Additionaly, \@ref(tab:Continent-summary) highlights that in 1950 and 2020 the percentage of Africa's population that is 65 or older is `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Percentage Population Aged 65+ in 1950"]` & `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Percentage Population Aged 65+ in 2020"]` respectively. Asia has also only experienced 5%  increase of the population aged 65+, with most other continents have had a large increase in percentage of population 65 years and older from 1950 to 2020 indicating increases in life expectancy in those regions. All continents have experienced a reduction in percentages of population aged between 0-14 years old. As populations have also increased in each continent this indicates that there is a large increase in working age population and 65+. As mentioned in (Lutz and KC, 2010) with increasing education has also come increased life expectancy, which will have major global implications for food, health, climate change and much more. 
+
+Figure \@ref(fig:ContinentPlot) shows population growth trends have varied significantly across continents from 1950 to 2020. Africa experienced the highest growth rate, with an annual growth rate of `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Annual Growth Rate"]`, while Europe saw the lowest at `r continent_TabData[continent_TabData$Entity == "Europe (UN)", "Annual Growth Rate"]` seen in \@ref(tab:Continent-summary). Africa’s population grew from `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Population 1950"]` to `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Population 2020"]` (1.38 billion), with a young demographic, as the percentage of those aged 65+ remained low. In contrast, Europe’s elderly population increased significantly, from `r continent_TabData[continent_TabData$Entity == "Europe (UN)", "Percentage Population Aged 65+ in 1950"]` in 1950 to `r continent_TabData[continent_TabData$Entity == "Europe (UN)", "Percentage Population Aged 65+ in 2020"]` in 2020, reflecting higher life expectancy and lower birth rates. Asia, while seeing moderate growth in its elderly population (up 5%), maintains a large working-age population. Across all continents, the percentage of those aged 0-14 declined, indicating lower birth rates. These trends are driven by factors like improved healthcare, lower fertility rates, and urbanization. These demographic shifts present challenges for economic growth, healthcare systems, and social services, highlighting the need for targeted policies addressing aging populations and youth employment (Lutz and KC, 2010). 
+
+
+  
+  * **How has a region's economic development influenced population changes over time? Specifically, what are the population trends from 1950 to 2020 in low, medium, and high economic regions in each age group (youth, working and elderly)?"**
 
 
 
@@ -422,4 +435,7 @@ UNICEF. (2024). State of the world's children. Retrieved from https://www.unicef
 
 Pletcher, K. (2024). China's one-child policy and its effects. Encyclopaedia Britannica. Retrieved from https://www.britannica.com
 
-United Nations Department of Economic and Social Affairs. (2023). World population prospects. Retrieved from https://population.un.org
+United Nations Department of Economic and Social Affairs. (2023). World population prospects. Retrieved from https://population.un.org 
+Lutz, W. and KC, S (2010) 'Dimensions of global population projections: What do we know about future population trends and structures?'. Retrieved from https://royalsocietypublishing.org/doi/full/10.1098/rstb.2010.0133
+
+
