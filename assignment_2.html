@@ -1049,7 +1049,22 @@ Economic_pop_percentages &lt;- Economic_Popdata_wide1 %&gt;%
   mutate(Year = paste0(Year, &quot; (%)&quot;))
 
 Economic_Popdata_wide1 &lt;- Economic_populations %&gt;%
-  pivot_wider(names_from = Socio_Economic_Status, values_from = c(&quot;0-14&quot;, &quot;15-64&quot;, &quot;65+&quot;))
+  pivot_wider(names_from = Socio_Economic_Status, values_from = c(&quot;0-14&quot;, &quot;15-64&quot;, &quot;65+&quot;)) %&gt;% 
+  select(
+    Year, 
+    &quot;0-14_Low-income countries&quot;,
+    &quot;15-64_Low-income countries&quot;, 
+    &quot;65+_Low-income countries&quot;,
+    &quot;0-14_Lower-middle-income countries&quot;,
+    &quot;15-64_Lower-middle-income countries&quot;,
+    &quot;65+_Lower-middle-income countries&quot;,
+    &quot;0-14_Upper-middle-income countries&quot;, 
+    &quot;15-64_Upper-middle-income countries&quot;, 
+    &quot;65+_Upper-middle-income countries&quot;,
+    &quot;0-14_High-income countries&quot;,
+    &quot;15-64_High-income countries&quot;, 
+    &quot;65+_High-income countries&quot;,
+  )
 
 Eco_percentages_wide &lt;- Economic_pop_percentages %&gt;% 
   pivot_wider(names_from = Socio_Economic_Status, values_from = c(&quot;0-14&quot;, &quot;15-64&quot;, &quot;65+&quot;))
@@ -1155,34 +1170,34 @@ Year
 47.7M
 </td>
 <td style="text-align:left;">
-272.9M
-</td>
-<td style="text-align:left;">
-349.5M
-</td>
-<td style="text-align:left;">
-194.9M
-</td>
-<td style="text-align:left;">
 61.1M
-</td>
-<td style="text-align:left;">
-412.5M
-</td>
-<td style="text-align:left;">
-578.1M
-</td>
-<td style="text-align:left;">
-444.4M
 </td>
 <td style="text-align:left;">
 3.6M
 </td>
 <td style="text-align:left;">
+272.9M
+</td>
+<td style="text-align:left;">
+412.5M
+</td>
+<td style="text-align:left;">
 25.4M
 </td>
 <td style="text-align:left;">
+349.5M
+</td>
+<td style="text-align:left;">
+578.1M
+</td>
+<td style="text-align:left;">
 43.8M
+</td>
+<td style="text-align:left;">
+194.9M
+</td>
+<td style="text-align:left;">
+444.4M
 </td>
 <td style="text-align:left;">
 53.4M
@@ -1196,34 +1211,34 @@ Year
 42.46%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
-38.4%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-35.98%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-28.14%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
 54.32%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-58.03%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-59.51%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-64.15%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
 3.22%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
+38.4%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
+58.03%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
 3.57%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
+35.98%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
+59.51%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
 4.51%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
+28.14%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
+64.15%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
 7.71%
@@ -1237,34 +1252,34 @@ Year
 115.5M
 </td>
 <td style="text-align:left;">
-667.0M
-</td>
-<td style="text-align:left;">
-646.7M
-</td>
-<td style="text-align:left;">
-220.4M
-</td>
-<td style="text-align:left;">
 133.5M
-</td>
-<td style="text-align:left;">
-905.9M
-</td>
-<td style="text-align:left;">
-1 218.7M
-</td>
-<td style="text-align:left;">
-660.2M
 </td>
 <td style="text-align:left;">
 7.7M
 </td>
 <td style="text-align:left;">
+667.0M
+</td>
+<td style="text-align:left;">
+905.9M
+</td>
+<td style="text-align:left;">
 64.9M
 </td>
 <td style="text-align:left;">
+646.7M
+</td>
+<td style="text-align:left;">
+1 218.7M
+</td>
+<td style="text-align:left;">
 98.4M
+</td>
+<td style="text-align:left;">
+220.4M
+</td>
+<td style="text-align:left;">
+660.2M
 </td>
 <td style="text-align:left;">
 111.9M
@@ -1278,34 +1293,34 @@ Year
 44.98%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
-40.73%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-32.93%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-22.2%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
 52.01%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-55.31%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-62.06%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-66.52%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
 3.01%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
+40.73%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
+55.31%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
 3.96%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
+32.93%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
+62.06%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
 5.01%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
+22.2%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
+66.52%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
 11.28%
@@ -1319,34 +1334,34 @@ Year
 287.6M
 </td>
 <td style="text-align:left;">
-958.4M
-</td>
-<td style="text-align:left;">
-577.6M
-</td>
-<td style="text-align:left;">
-203.4M
-</td>
-<td style="text-align:left;">
 370.5M
-</td>
-<td style="text-align:left;">
-2 005.5M
-</td>
-<td style="text-align:left;">
-1 906.6M
-</td>
-<td style="text-align:left;">
-813.1M
 </td>
 <td style="text-align:left;">
 21.5M
 </td>
 <td style="text-align:left;">
+958.4M
+</td>
+<td style="text-align:left;">
+2 005.5M
+</td>
+<td style="text-align:left;">
 177.9M
 </td>
 <td style="text-align:left;">
+577.6M
+</td>
+<td style="text-align:left;">
+1 906.6M
+</td>
+<td style="text-align:left;">
 304.7M
+</td>
+<td style="text-align:left;">
+203.4M
+</td>
+<td style="text-align:left;">
+813.1M
 </td>
 <td style="text-align:left;">
 230.2M
@@ -1360,34 +1375,34 @@ Year
 42.32%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
-30.5%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-20.71%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-16.31%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
 54.52%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-63.83%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-68.36%
-</td>
-<td style="text-align:left;background-color: lightgray !important;">
-65.22%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
 3.16%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
+30.5%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
+63.83%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
 5.66%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
+20.71%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
+68.36%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
 10.93%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
+16.31%
+</td>
+<td style="text-align:left;background-color: lightgray !important;">
+65.22%
 </td>
 <td style="text-align:left;background-color: lightgray !important;">
 18.47%
@@ -1401,12 +1416,12 @@ Year
 <ul>
 <li><strong>How has population changed through the decades in each continent and what might be the causes for various population trends in the different continents?</strong></li>
 </ul>
-<p>Figure <a href="#fig:ContinentPlot">3.1</a> presents a column graph that tracks the population changes across continents from 1950 to 2023. The data reveals several key trends such as Africa having the highest rate of population growth in this period and Europe the lowest. Other notable observations from <a href="#fig:ContinentPlot">3.1</a> include alarming population size in Asia exceeding 4.5 billion.</p>
-<p>Table <a href="#tab:Continent-summary">3.1</a> confirms Africas largest rate of population growth calculated as AGR at 2.61%. Additionaly, <a href="#tab:Continent-summary">3.1</a> highlights that in 1950 and 2020 the percentage of Africa’s population that is 65 or older is 3.32% &amp; 3.46% respectively. Asia has also only experienced 5% increase of the population aged 65+, with most other continents have had a large increase in percentage of population 65 years and older from 1950 to 2020 indicating increases in life expectancy in those regions. All continents have experienced a reduction in percentages of population aged between 0-14 years old. As populations have also increased in each continent this indicates that there is a large increase in working age population and 65+. As mentioned in (Lutz and KC, 2010) with increasing education has also come increased life expectancy, which will have major global implications for food, health, climate change and much more.</p>
 <p>Figure <a href="#fig:ContinentPlot">3.1</a> shows population growth trends have varied significantly across continents from 1950 to 2020. Africa experienced the highest growth rate, with an annual growth rate of 2.61%, while Europe saw the lowest at 0.45% seen in <a href="#tab:Continent-summary">3.1</a>. Africa’s population grew from 227.8M to 1 380.8M (1.38 billion), with a young demographic, as the percentage of those aged 65+ remained low. In contrast, Europe’s elderly population increased significantly, from 7.89% in 1950 to 19.06% in 2020, reflecting higher life expectancy and lower birth rates. Asia, while seeing moderate growth in its elderly population (up 5%), maintains a large working-age population. Across all continents, the percentage of those aged 0-14 declined, indicating lower birth rates. These trends are driven by factors like improved healthcare, lower fertility rates, and urbanization. These demographic shifts present challenges for economic growth, healthcare systems, and social services, highlighting the need for targeted policies addressing aging populations and youth employment (Lutz and KC, 2010).</p>
 <ul>
 <li><strong>How has a region’s economic development influenced population changes over time? Specifically, what are the population trends from 1950 to 2020 in low, medium, and high economic regions in each age group (youth, working and elderly)?“</strong></li>
 </ul>
+<p>The area chart depicted in <a href="#fig:EcoP">3.2</a> shows how population has changed over time for various socio-economic regions. from this we can see that areas of low-income have extremely small population growth in the age group 65+, that areas of low income may have decreased life expectancy. <a href="#tab:SocioEco">3.3</a> shows that populations in low-income regions from 1950 to 2020, in the 65+ age group population decreased in percentage from 35.98% to 20.71% respectively while in regions of high-income the percentage of population aged 65+ has increased from 7.71% to 18.47%. This suggests that areas of higher socio-economic status elderly population is increasing while areas of lower economic status are decreasing, likely due to the discrepancy in educaiton levels and other socio-economic factors influencing life expectancy.</p>
+<p>The area chart in <a href="#fig:EcoP">3.2</a> and table <a href="#tab:SocioEco">3.3</a> show that low-income regions have experienced minimal growth in the 65+ age group, with its percentage slightly declining from 42.46% in 1950 to 42.32% in 2020. This likely reflects lower life expectancy and limited healthcare (Lutz and KC, 2010). In contrast, high-income regions saw the elderly population grow from 7.71% to in 1950 to 18.47% in 2020, indicating better healthcare and longevity. Additionally, both regions saw declines in youth populations, while working-age populations have expanded, especially in high-income areas, highlighting broader demographic shifts driven by economic development.</p>
 </div>
 </div>
 <div id="vincent---analysis" class="section level1" number="4">

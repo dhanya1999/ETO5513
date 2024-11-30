@@ -257,7 +257,22 @@ Economic_pop_percentages <- Economic_Popdata_wide1 %>%
   mutate(Year = paste0(Year, " (%)"))
 
 Economic_Popdata_wide1 <- Economic_populations %>%
-  pivot_wider(names_from = Socio_Economic_Status, values_from = c("0-14", "15-64", "65+"))
+  pivot_wider(names_from = Socio_Economic_Status, values_from = c("0-14", "15-64", "65+")) %>% 
+  select(
+    Year, 
+    "0-14_Low-income countries",
+    "15-64_Low-income countries", 
+    "65+_Low-income countries",
+    "0-14_Lower-middle-income countries",
+    "15-64_Lower-middle-income countries",
+    "65+_Lower-middle-income countries",
+    "0-14_Upper-middle-income countries", 
+    "15-64_Upper-middle-income countries", 
+    "65+_Upper-middle-income countries",
+    "0-14_High-income countries",
+    "15-64_High-income countries", 
+    "65+_High-income countries",
+  )
 
 Eco_percentages_wide <- Economic_pop_percentages %>% 
   pivot_wider(names_from = Socio_Economic_Status, values_from = c("0-14", "15-64", "65+"))
@@ -290,15 +305,13 @@ Economic_pop_data_combined %>%
 
 * **How has population changed through the decades in each continent and what might be the causes for various population trends in the different continents?**
 
-Figure \@ref(fig:ContinentPlot) presents a column graph that tracks the population changes across continents from 1950 to 2023. The data reveals several key trends such as Africa having the highest rate of population growth in this period and Europe the lowest. Other notable observations from \@ref(fig:ContinentPlot) include alarming population size in Asia exceeding 4.5 billion. 
-
-Table \@ref(tab:Continent-summary) confirms Africas largest rate of population growth calculated as AGR at `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Annual Growth Rate"]`. Additionaly, \@ref(tab:Continent-summary) highlights that in 1950 and 2020 the percentage of Africa's population that is 65 or older is `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Percentage Population Aged 65+ in 1950"]` & `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Percentage Population Aged 65+ in 2020"]` respectively. Asia has also only experienced 5%  increase of the population aged 65+, with most other continents have had a large increase in percentage of population 65 years and older from 1950 to 2020 indicating increases in life expectancy in those regions. All continents have experienced a reduction in percentages of population aged between 0-14 years old. As populations have also increased in each continent this indicates that there is a large increase in working age population and 65+. As mentioned in (Lutz and KC, 2010) with increasing education has also come increased life expectancy, which will have major global implications for food, health, climate change and much more. 
-
 Figure \@ref(fig:ContinentPlot) shows population growth trends have varied significantly across continents from 1950 to 2020. Africa experienced the highest growth rate, with an annual growth rate of `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Annual Growth Rate"]`, while Europe saw the lowest at `r continent_TabData[continent_TabData$Entity == "Europe (UN)", "Annual Growth Rate"]` seen in \@ref(tab:Continent-summary). Africa’s population grew from `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Population 1950"]` to `r continent_TabData[continent_TabData$Entity == "Africa (UN)", "Population 2020"]` (1.38 billion), with a young demographic, as the percentage of those aged 65+ remained low. In contrast, Europe’s elderly population increased significantly, from `r continent_TabData[continent_TabData$Entity == "Europe (UN)", "Percentage Population Aged 65+ in 1950"]` in 1950 to `r continent_TabData[continent_TabData$Entity == "Europe (UN)", "Percentage Population Aged 65+ in 2020"]` in 2020, reflecting higher life expectancy and lower birth rates. Asia, while seeing moderate growth in its elderly population (up 5%), maintains a large working-age population. Across all continents, the percentage of those aged 0-14 declined, indicating lower birth rates. These trends are driven by factors like improved healthcare, lower fertility rates, and urbanization. These demographic shifts present challenges for economic growth, healthcare systems, and social services, highlighting the need for targeted policies addressing aging populations and youth employment (Lutz and KC, 2010). 
-
-
   
   * **How has a region's economic development influenced population changes over time? Specifically, what are the population trends from 1950 to 2020 in low, medium, and high economic regions in each age group (youth, working and elderly)?"**
+
+The area chart depicted in \@ref(fig:EcoP) shows how population has changed over time for various socio-economic regions. from this we can see that areas of low-income have extremely small population growth in the age group 65+,  that areas of low income may have decreased life expectancy. \@ref(tab:SocioEco) shows that populations in low-income regions from 1950 to 2020, in the 65+ age group population decreased in percentage from `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "1950 (%)", "0-14_Upper-middle-income countries"]` to `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "2020 (%)", "0-14_Upper-middle-income countries"]` respectively while in regions of high-income the percentage of population aged 65+ has increased from `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "1950 (%)", "65+_High-income countries"]` to `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "2020 (%)", "65+_High-income countries"]`. This suggests that areas of higher socio-economic status elderly population is increasing while areas of lower economic status are decreasing, likely due to the discrepancy in educaiton levels and other socio-economic factors influencing life expectancy. 
+
+The area chart in \@ref(fig:EcoP) and table \@ref(tab:SocioEco) show that low-income regions have experienced minimal growth in the 65+ age group, with its percentage slightly declining from `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "1950 (%)", "0-14_Low-income countries"]` in 1950 to `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "2020 (%)", "0-14_Low-income countries"]` in 2020. This likely reflects lower life expectancy and limited healthcare (Lutz and KC, 2010). In contrast, high-income regions saw the elderly population grow from `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "1950 (%)", "65+_High-income countries"]` to  in 1950 to `r Economic_pop_data_combined[Economic_pop_data_combined$Year == "2020 (%)", "65+_High-income countries"]` in 2020, indicating better healthcare and longevity. Additionally, both regions saw declines in youth populations, while working-age populations have expanded, especially in high-income areas, highlighting broader demographic shifts driven by economic development.
 
 
 
