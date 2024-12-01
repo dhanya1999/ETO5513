@@ -1,0 +1,190 @@
+---
+title: "Analysis of Population Dynamics by Age Groups and Regions"
+author: "Bailey Dalton, Dhanya Dharshini Veeraraghavan, Vincent Currie"
+date: "2024-11-20"
+output: html_document
+---
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(tidyr)
+library(plotly)
+```
+
+## Data Preperation
+
+```{r}
+# Load the dataset
+data <- read.csv("Data/population-young-working-elderly.csv")
+
+```
+
+# Group Section - Introduction 
+
+
+# Research Questions - to asnwer in each analysis 
+
+#### * Bailey Research Questions:
+  * How has population changed through the decades in each continent and what mihgt this suggest about countries socioeconomic status? 
+  * Which regions are experiencing a "youth bulge" or "Ageing population", and what might this imply for their future economic and social policies? 
+
+
+#### * Vincent Research Questions:
+  * 1. ?? 
+  * 2. ?? 
+
+
+
+#### * Dhanya Reserach Questoins: 
+  * How has the population aged 65+ evolved globally over the past few decades, and what regions show the fastest growth in this age group?  
+    - Aging populations are growing faster in developed countries due to higher life expectancy and declining fertility rates.
+    - Certain developing countries may show a recent sharp increase, indicating early stages of demographic transition.
+    - Regional differences highlight the need for targeted healthcare and social support systems.
+
+  * What is the trend in the 0-14 age group population across different regions, and how does it reflect changes in birth rates or youth demographics?  
+    - Declining trends in 0-14 populations in developed regions suggest falling birth rates, often associated with economic development and urbanization.
+    - Regions with stable or growing 0-14 populations indicate continued high fertility rates, potentially creating future workforce surges.
+
+
+
+# Bailey - Analysis 
+
+
+
+
+# Vincent - Analysis 
+
+
+
+
+# Dhanya Analysis 
+
+#### Visualisation
+
+#### Fig 1: Population Aged 65+ for Selected countries (1950-2020) - Dhanya
+
+```{r}
+
+# Define countries to highlight
+highlight_countries <- c("United States", "China", "India", "Australia", "Japan")
+
+# Filter data for highlighted countries
+highlighted_data <- data %>% filter(Entity %in% highlight_countries)
+
+# Create the stacked area chart
+ggplot(highlighted_data, aes(x = Year, y = Population_65plus, fill = Entity)) +
+  geom_area(alpha = 0.8) +  # Use geom_area for stacked chart
+  labs(title = "Population Aged 65+ for Selected countries",
+       x = "Year",
+       y = "Population",
+       fill = "Country") +
+  theme_minimal() +
+  scale_fill_manual(values = c(
+    "United States" = "red", 
+    "China" = "yellow", 
+    "India" = "green", 
+    "Australia" = "purple", 
+    "Japan" = "orange"
+  ))
+
+```
+
+#### Population Aged 0-14 for Selected Countries (1950-2020)
+
+```{r}
+
+# Define countries to include
+selected_countries <- c("United States", "China", "India", "Australia", "Japan")
+
+# Filter data for the selected countries
+filtered_data <- data %>%
+  filter(Entity %in% selected_countries) %>%
+  group_by(Entity, Year) %>%
+  summarise(Population_0to14 = sum(Population_0to14, na.rm = TRUE))
+
+# Create the stacked area chart
+ggplot(filtered_data, aes(x = Year, y = Population_0to14, fill = Entity)) +
+  geom_area(alpha = 0.8) +  # Stacked area chart
+  labs(title = "Population Aged 0-14 for Selected Countries (1950-2020)",
+       x = "Year",
+       y = "Population",
+       fill = "Country") +
+  theme_minimal() +
+  scale_fill_manual(values = c(
+    "United States" = "red", 
+    "China" = "blue", 
+    "India" = "green", 
+    "Australia" = "purple", 
+    "Japan" = "orange"
+  ))
+
+```
+
+#### Tables
+
+```{r}
+# Calculate growth in the population aged 65+
+growth <- data %>%
+  group_by(Entity) %>%
+  summarise(Start_1950 = first(Population_65plus),
+            End_2023 = last(Population_65plus)) %>%
+  mutate(Growth = End_2023 - Start_1950) %>%
+  arrange(desc(Growth)) %>%
+  head(5)
+
+# Display the table
+kable(growth, caption = "Table 1: Top 5 Countries with Highest Growth in Population Aged 65+")
+```
+
+```{r}
+# Calculate growth in the population aged 0-14 for each country
+growth <- data %>%
+  group_by(Entity) %>%
+  summarise(Start_1950 = first(Population_0to14),
+            End_2023 = last(Population_0to14),
+            Growth = End_2023 - Start_1950) %>%
+  arrange(desc(Growth)) %>%
+  head(5)
+
+# Display the table
+kable(growth, caption = "Table 2: Top 5 Countries with Highest Growth in Population Aged 0-14")
+```
+
+## Analysis
+
+
+###### Figure 1: Population Aged 65+ for Selected Countries (1950-2020)
+
+This chart highlights the rapid growth of elderly populations in selected countries. China shows the steepest increase due to improved healthcare and longer life expectancy (World Bank, 2023). Japan’s sharp rise post-1970 reflects its aging crisis caused by low fertility and high longevity, leading to challenges in sustaining healthcare and pensions (OECD, 2023). India’s slower growth suggests it remains in an earlier demographic stage, while the United States and Australia exhibit steady but less pronounced growth.
+
+###### Figure 2: Population Aged 0-14 for Selected Countries (1950-2020)
+
+India retains the largest 0-14 population due to high fertility rates (UNICEF, 2024). In contrast, China’s decline post-1970s aligns with its one-child policy (Pletcher, 2024). Developed nations like the United States, Japan, and Australia show consistent declines, reflecting lower birth rates and the challenges of maintaining a sustainable workforce in aging populations.
+
+###### Table 1: Top 5 Countries with Highest Growth in Population Aged 65+
+
+China, India, and Japan lead in growth, driven by rising life expectancies and large populations (UN DESA, 2023). Brazil and Russia follow, reflecting similar aging trends in emerging economies as they transition demographically.
+
+###### Table 2: Top 5 Countries with Highest Growth in Population Aged 0-14
+
+India, Nigeria, and Pakistan dominate, driven by high fertility rates in developing nations. Indonesia’s rise signals Southeast Asia’s growing youth population, while China’s moderated growth reflects earlier demographic trends during its high-fertility era.
+
+# Group Section - Conclusion & References 
+
+### Conclusion - Append this to final conclusion:
+
+These trends illustrate aging challenges in developed nations and youth-driven opportunities in developing regions. Targeted policies in healthcare, education, and economic planning are essential to manage these demographic shifts effectively.
+
+### References
+
+World Bank. (2023). Population and demographic indicators. Retrieved from https://www.worldbank.org
+
+OECD. (2023). The silver economy: Policies for an aging society. Retrieved from https://www.oecd.org
+
+UNICEF. (2024). State of the world's children. Retrieved from https://www.unicef.org
+
+Pletcher, K. (2024). China's one-child policy and its effects. Encyclopaedia Britannica. Retrieved from https://www.britannica.com
+
+United Nations Department of Economic and Social Affairs. (2023). World population prospects. Retrieved from https://population.un.org

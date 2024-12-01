@@ -45,7 +45,6 @@ library(reshape2)
 
 ```
 
-
 # Data Preparation
 
 This section describes the steps to preprocess and organise the data, including cleaning, transforming, and categorising variables. It ensures the data-set's readiness for analysis and aligns with the research objectives.
@@ -346,7 +345,6 @@ ggplot(filtered_data, aes(x = Year, y = Population_0to14, fill = Entity)) +
 
 ```
 
-
 ## Visualisation - Vince Currie
 
 ```{r Figure-Gngp, warning=FALSE, fig.cap="World STEM Gender Gap(%)<br>(Based on 2015-2022 Data) - (Author: Vince Currie)", fig.topcaption=TRUE}
@@ -614,11 +612,13 @@ knitr::kable(australia_tab,
 ```
 
 
+
 # Conclusion
 
 These trends highlight aging challenges in developed nations and youth-driven opportunities in developing regions. Targeted policies in healthcare, education, and economic planning are essential to address these demographic shifts effectively.
 
 Globally, STEM fields consistently exhibit male dominance with narrower gender variability compared to non-STEM fields. In Australia, STEM shows similar male dominance across most levels, while non-STEM fields demonstrate broader gender diversity and female-majority representation. Targeted initiatives remain critical to fostering equity in STEM both globally and within Australia.
+
 
 
 # References

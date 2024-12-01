@@ -1,8 +1,9 @@
 ---
 title: "Analysis of Population Dynamics by Age Groups and Regions"
 author: "Bailey Dalton, Dhanya Dharshini Veeraraghavan, Vincent Currie"
-date: "`r toupper(format(Sys.Date(), '%d-%b-%Y'))`" 
+date: "`r toupper(format(Sys.Date(), '%d-%b-%Y'))`" # VC
 output: 
+  #html_document VC:
   bookdown::html_document2:
     css: !expr here::here("Scripts","custom.css") # Examples taken from https://www.w3schools.com/css/default.asp.
     toc: true
@@ -42,11 +43,41 @@ library(tibble)
 library(kableExtra) 
 library(bookdown)
 library(reshape2)
+#library(ggrepel)
+#library(DT)
+#library(gt)
 
 ```
 
+# Introduction
 
-# Data Preparation
+This report examines the evolution of gender gaps in education, from primary to tertiary levels, through historical and modern contexts, analysing regional progress, policy impacts, and links to socioeconomic development. It highlights global trends and contrasts between developed and developing countries and explores STEM-specific disparities, including Australia’s gender parity across STEM and non-STEM fields.
+
+The authors have undertaken specific parts of the analysis: [Author 1] explores historical trends, [Author 2] investigates regional progress, and Vince Currie examines STEM-specific disparities. These individual sections come together in the conclusion to provide a comprehensive understanding of the gender gap research questions and their broader implications.
+
+## Research Questions 
+
+This section investigates critical research questions about gender gaps in education across various levels and fields. It examines global trends, regional differences, and how policies influence gender parity. The analysis emphasizes disparities in STEM and non-STEM fields, focusing on Australia’s efforts to achieve equity in educational representation.
+
+### How does the gender gap in STEM education compare to other fields globally between 2015 and 2022? (Author: Vince Currie)
+
+This analysis draws on data from the @RN21 to examine gender disparities in education, focusing on the number of enrolled students, new entries, and graduates. It assesses female representation in STEM fields relative to other areas, aiming to determine whether STEM fields experience a shortfall of females. The source data is available [here](https://data-explorer.oecd.org/vis?fs[0]=Topic%2C1%7CEducation%20and%20skills%23EDU%23%7CStudents%23EDU_STU%23&pg=0&fc=Topic&bp=true&snb=31&df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_EAG_UOE_NON_FIN_STUD%40DF_UOE_NF_DIST_FIELD&df[ag]=OECD.EDU.IMEP&df[vs]=1.0&dq=.ISCED11_5T8%2BISCED11_5%2BISCED11_6%2BISCED11_7%2BISCED11_8.GRAD...F00%2BF01%2BF02%2BF03%2BF04%2BF05%2BF06%2BF07%2BF08%2BF09%2BF10%2B_TX_U..A...._T.._T.&pd=2015%2C&to[TIME_PERIOD]=false&ly[cl]=EDUCATION_FIELD%2CTIME_PERIOD&ly[rs]=EDUCATION_LEV&ly[rw]=REF_AREA&vw=tb).
+
+Table \@ref(tab:table-FldCmpr) provides a detailed breakdown of various vocational areas. STEM fields are highlighted in <font size="4">*italics*</font> and <font size="4">large font</font>, while the broader categories of **STEM** and **OTHER** represent collections of different vocational groupings. STEM includes the highlighted fields, while OTHER covers all remaining professions.
+
+The analysis calculates the gender gap as the difference between the number of males and females in each global category (males - females). A positive value indicates a shortfall of females in STEM (males outnumber females), while a negative value reflects more females than males, suggesting no shortfall.
+
+### How does gender parity in STEM education compare to non-STEM fields in Australia across different levels and fields from 2015 to 2022? (Author: Vince Currie)
+
+This analysis narrows its focus to Australia, drawing on data from the @RN21 to examine gender disparities in education across different levels (e.g., Bachelor's, Master's, and Vocational) and fields of study. It evaluates gender parity by comparing the representation of females and males in STEM fields to non-STEM fields (OTHER) within the Australian context from 2015 to 2022. The aim is to identify specific areas and education levels where gender disparities are most pronounced and assess progress toward achieving parity. The source data is available [here](https://data-explorer.oecd.org/vis?fs[0]=Topic%2C1%7CEducation%20and%20skills%23EDU%23%7CStudents%23EDU_STU%23&pg=0&fc=Topic&bp=true&snb=31&df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_EAG_UOE_NON_FIN_STUD%40DF_UOE_NF_DIST_FIELD&df[ag]=OECD.EDU.IMEP&df[vs]=1.0&dq=.ISCED11_5T8%2BISCED11_5%2BISCED11_6%2BISCED11_7%2BISCED11_8.GRAD...F00%2BF01%2BF02%2BF03%2BF04%2BF05%2BF06%2BF07%2BF08%2BF09%2BF10%2B_TX_U..A...._T.._T.&pd=2015%2C&to[TIME_PERIOD]=false&ly[cl]=EDUCATION_FIELD%2CTIME_PERIOD&ly[rs]=EDUCATION_LEV&ly[rw]=REF_AREA&vw=tb).
+
+Table  \@ref(tab:table-FldCmpr) provides a breakdown of various vocational areas in Australia. STEM fields are highlighted in italics and large font, while the OTHER category includes all non-STEM fields.
+
+The analysis calculates the gender gap as the difference between the percentage of males and females in each category (males - females). A positive value indicates male dominance (males outnumber females), while a negative value indicates female dominance (females outnumber males). A value close to zero reflects near parity. Near parity is defined as $\|Gender Gap\|\space <= \space 1.0 $, meaning the representation of males and females is approximately equal within this range. 
+
+# Analysis
+
+## Data Preparation
 
 This section describes the steps to preprocess and organise the data, including cleaning, transforming, and categorising variables. It ensures the data-set's readiness for analysis and aligns with the research objectives.
 
@@ -208,87 +239,12 @@ australia_tab <- australia_data %>%
   filter(abs(`Gender Gap`) <= 1) %>%
   select( Field, `Stem Status`, Level, `Gender Gap`) 
 
+
 ```
 
-# Introduction 
-
-This report examines the evolution of gender gaps in education, from primary to tertiary levels, through historical and modern contexts, analysing regional progress, policy impacts, and links to socioeconomic development. It highlights global trends and contrasts between developed and developing countries and explores STEM-specific disparities, including Australia’s gender parity across STEM and non-STEM fields.
-
-The authors have undertaken specific parts of the analysis: [Author 1] explores historical trends, [Author 2] investigates regional progress, and Vince Currie examines STEM-specific disparities. These individual sections come together in the conclusion to provide a comprehensive understanding of the gender gap research questions and their broader implications.
-
-# Research Questions  
-
-This section investigates critical research questions about gender gaps in education across various levels and fields. It examines global trends, regional differences, and how policies influence gender parity. The analysis emphasizes disparities in STEM and non-STEM fields, focusing on Australia’s efforts to achieve equity in educational representation.
-
-## Research Questions - Vince Currie 
-
-1. *How does the gender gap in STEM education compare to other fields globally between 2015 and 2022?* (Author: Vince Currie) This analysis draws on data from the @RN21 to examine gender disparities in education, focusing on the number of enrolled students, new entries, and graduates. It assesses female representation in STEM fields relative to other areas, aiming to determine whether STEM fields experience a shortfall of females. 
-
-    Table \@ref(tab:table-FldCmpr) provides a detailed breakdown of various vocational areas. STEM fields are highlighted in <font size="4">*italics*</font> and <font size="4">large font</font>, while the broader categories of **STEM** and **OTHER** represent collections of different vocational groupings. STEM includes the highlighted fields, while OTHER covers all remaining professions. 
-    
-    The analysis calculates the gender gap as the difference between the number of males and females in each global category (males - females). A positive value indicates a shortfall of females in STEM (males outnumber females), while a negative value reflects more females than males, suggesting no shortfall.
-
-2. *How does gender parity in STEM education compare to non-STEM fields in Australia across different levels and fields from 2015 to 2022?* (Author: Vince Currie) This analysis narrows its focus to Australia, drawing on data from the @RN21 to examine gender disparities in education across different levels (e.g., Bachelor's, Master's, and Vocational) and fields of study. It evaluates gender parity by comparing the representation of females and males in STEM fields to non-STEM fields (OTHER) within the Australian context from 2015 to 2022. The aim is to identify specific areas and education levels where gender disparities are most pronounced and assess progress toward achieving parity. 
-    
-    Table  \@ref(tab:table-FldCmpr) provides a breakdown of various vocational areas in Australia. STEM fields are highlighted in italics and large font, while the OTHER category includes all non-STEM fields. The analysis calculates the gender gap as the difference between the percentage of males and females in each category (males - females). A positive value indicates male dominance (males outnumber females), while a negative value indicates female dominance (females outnumber males). A value close to zero reflects near parity. Near parity is defined as $\|Gender Gap\|\space <= \space 1.0$, meaning the representation of males and females is approximately equal within this range. 
-
-## Reserach Questions - Dhanya
-
-  * How has the population aged 65+ evolved globally over the past few decades, and what regions show the fastest growth in this age group?  
-    - Aging populations are growing faster in developed countries due to higher life expectancy and declining fertility rates.
-    - Certain developing countries may show a recent sharp increase, indicating early stages of demographic transition.
-    - Regional differences highlight the need for targeted healthcare and social support systems.
-
-  * What is the trend in the 0-14 age group population across different regions, and how does it reflect changes in birth rates or youth demographics?  
-    - Declining trends in 0-14 populations in developed regions suggest falling birth rates, often associated with economic development and urbanization.
-    - Regions with stable or growing 0-14 populations indicate continued high fertility rates, potentially creating future workforce surges.
-
-
-# Analysis
-
-## Analysis - Vince Currie
-
-1. *Analysis - How does the gender gap in STEM education compare to other fields globally between 2015 and 2022?* (Author:Vince Currie)
-
-    Figure \@ref(fig:Figure-Gngp) presents a box plot and statistical markers illustrating differences in gender gaps between STEM and OTHER fields.
-In STEM fields, the median gender gap is close to zero (`r as.numeric(summary_stats[summary_stats$STEM_Status == "STEM", "Median_Gender_Gap"])`), and the mean (`r as.numeric(summary_stats[summary_stats$STEM_Status == "STEM", "Mean_Gender_Gap"])`) skews slightly negative, indicating modest improvements in gender balance. The relatively narrow interquartile range (IQR), with Q3 (`r as.numeric(iqr_stats[iqr_stats$STEM_Status == "STEM", "Q3"])`) highlighting areas of male dominance and Q1 (`r as.numeric(iqr_stats[iqr_stats$STEM_Status == "STEM", "Q1"])`) reflecting progress in female representation, suggests reduced variability. However, the positive skewness of the box plot underscores persistent male dominance, particularly in disciplines such as engineering and ICT.
-
-    In contrast, OTHER fields display a more pronounced negative mean (`r as.numeric(summary_stats[summary_stats$STEM_Status == "OTHER", "Mean_Gender_Gap"])`) and median (`r as.numeric(summary_stats[summary_stats$STEM_Status == "OTHER", "Median_Gender_Gap"])`), indicating female-majority representation, particularly in health and social sciences. The broader IQR, spanning Q1 (`r as.numeric(iqr_stats[iqr_stats$STEM_Status == "OTHER", "Q1"])`) to Q3 (`r as.numeric(iqr_stats[iqr_stats$STEM_Status == "OTHER", "Q3"])`), suggests more significant variability in gender representation, with a notable skew toward female dominance.
-
-    Additionally, the extremes in Table \@ref(tab:table-SmmrySttstcs) reveal significant male dominance in STEM (`r gsub(" ", "",paste("Upper: ",as.numeric(summary_stats[summary_stats$STEM_Status == "STEM", "Upper_Gender_Gap"]),"%"))`) and instances of female-majority representation (`r gsub(" ", "",paste("Lower: ",as.numeric(summary_stats[summary_stats$STEM_Status == "STEM", "Lower_Gender_Gap"]),"%"))`), with narrower variability than in OTHER fields. OTHER fields show broader extremes (`r gsub(" ", "",paste(as.numeric(summary_stats[summary_stats$STEM_Status == "OTHER", "Upper_Gender_Gap"]),"%"))` to `r gsub(" ", "",paste(as.numeric(summary_stats[summary_stats$STEM_Status == "OTHER", "Lower_Gender_Gap"]),"%"))`), reflecting greater gender diversity.  Figure \@ref(fig:Figure-Gngp) depicts these extremes as red circles, emphasising the range of gender disparities.  These findings underscore the persistent underrepresentation of females in STEM and the critical need for targeted strategies to close the gender gap and foster equity in STEM occupations.
-
-2. Analysis - *How does gender parity in STEM education compare to non-STEM fields in Australia across different levels and fields from 2015 to 2022?* (Author:Vince Currie)
-
-    Figure \@ref(fig:Figure-Astrl) illustrates the gender gap in STEM and non-STEM fields across different education levels in Australia from 2015 to 2022. The stacked bar chart reveals notable disparities, with STEM fields showing consistent male dominance across levels such as Bachelor’s and Master’s, particularly in disciplines like engineering and ICT. However, some fields at the vocational and PhD levels approach gender parity, 
-with $∥GenderGap∥\space ≤\space 1.0$ indicating near-equal representation. For example, in the Agriculture, Forestry, Fisheries, and Veterinary category,
-all levels except PhD demonstrate approximate parity.  In contrast, females dominate the PhD level (Table \@ref(tab:table-Astrltb)). The table also highlights other fields and education levels where the gender gap is near parity.
-
-    Non-STEM (OTHER) fields demonstrate a contrasting trend, with a pronounced negative gender gap indicating female dominance. For instance, health and education fields exhibit significantly higher female representation across all levels, particularly in Bachelor’s and Master’s degrees (Figure \@ref(fig:Figure-Astrl)). Variability in non-STEM fields reflects broader gender diversity, with some areas achieving parity or female dominance , while others differ significantly. This contrasts with STEM, where male dominance is more uniform and persistent, requiring targeted efforts to address gender disparities. The broader range of gender gap values in non-STEM fields underscores this diversity compared to STEM. These findings emphasize the need for targeted initiatives to encourage female participation in STEM while maintaining equity in non-STEM areas.
-
-## Analysis - Dhanya
-
-### Figure 1: Population Aged 65+ for Selected Countries (1950-2020)
-
-This chart highlights the rapid growth of elderly populations in selected countries. China shows the steepest increase due to improved healthcare and longer life expectancy [@RN16]. Japan’s sharp rise post-1970 reflects its aging crisis caused by low fertility and high longevity, leading to challenges in sustaining healthcare and pensions [@RN17]. India’s slower growth suggests it remains in an earlier demographic stage, while the United States and Australia exhibit steady but less pronounced growth.
-
-### Figure 2: Population Aged 0-14 for Selected Countries (1950-2020)
-
-India retains the largest 0-14 population due to high fertility rates [@RN18]. In contrast, China’s decline post-1970s aligns with its one-child policy [@RN19]. Developed nations like the United States, Japan, and Australia show consistent declines, reflecting lower birth rates and the challenges of maintaining a sustainable workforce in aging populations.
-
-### Table 1: Top 5 Countries with Highest Growth in Population Aged 65+
-
-China, India, and Japan lead in growth, driven by rising life expectancies and large populations (UN DESA, 2023). Brazil and Russia follow, reflecting similar aging trends in emerging economies as they transition demographically.
-
-### Table 2: Top 5 Countries with Highest Growth in Population Aged 0-14
-
-India, Nigeria, and Pakistan dominate, driven by high fertility rates in developing nations. Indonesia’s rise signals Southeast Asia’s growing youth population, while China’s moderated growth reflects earlier demographic trends during its high-fertility era.
-
-
-# Visualisation
+## Visualisation
 
 The visualisation section presents key insights through graphs and charts, illustrating gender gaps across education levels, fields, and regions. It highlights disparities in STEM and non-STEM fields, global trends, and Australia's context. These visualisations enhance understanding by showcasing patterns, variability, and progress toward achieving gender parity in education.
-
-## Visualisation - Dhanya
 
 ```{r Pop65, fig.cap="Population Aged 65+ for Selected countries (1950-2020) - (Author:Dhanya)", fig.topcaption=TRUE}
 
@@ -346,8 +302,6 @@ ggplot(filtered_data, aes(x = Year, y = Population_0to14, fill = Entity)) +
 
 ```
 
-
-## Visualisation - Vince Currie
 
 ```{r Figure-Gngp, warning=FALSE, fig.cap="World STEM Gender Gap(%)<br>(Based on 2015-2022 Data) - (Author: Vince Currie)", fig.topcaption=TRUE}
 
@@ -486,11 +440,9 @@ ggplot(australia_data, aes(x = Fld, y = Gender_Gap, fill = Edctn_lvl)) +
 ```
 
 
-# Tables
+## Tables
 
 The Tables section presents detailed data summaries supporting the report's analysis. It includes gender gap statistics across education levels, fields, and regions, highlighting disparities and progress. These tables provide precise numerical insights, complementing the visualizations and enabling a more profound exploration of global trends, STEM and non-STEM comparisons, and Australia's educational gender dynamics.
-
-## Tables - Dhanya
 
 ```{r table-HGrowth, warning=FALSE, tab.cap="Top 5 Countries with Highest Growth in Population Aged 65+ (Author:Dhanya).", tab.cap.style = "inline"}
 # Calculate growth in the population aged 65+
@@ -538,8 +490,6 @@ kable(growth,
   )
 ```
 
-
-## Tables - Vince Currie
 
 ```{r  table-FldCmpr, warning=FALSE, tab.cap="Fields Compared for Gender Gap(%) Analysis<br>(Based on 2015-2022 Data) - (Author: Vince Currie).", tab.cap.style = "inline"}
 
@@ -613,6 +563,42 @@ knitr::kable(australia_tab,
 
 ```
 
+
+### Analysis - How does the gender gap in STEM education compare to other fields globally between 2015 and 2022 - (Author:Vince Currie)?
+
+Figure \@ref(fig:Figure-Gngp) presents a box plot and statistical markers illustrating differences in gender gaps between STEM and OTHER fields.
+In STEM fields, the median gender gap is close to zero (`r as.numeric(summary_stats[summary_stats$STEM_Status == "STEM", "Median_Gender_Gap"])`), and the mean (`r as.numeric(summary_stats[summary_stats$STEM_Status == "STEM", "Mean_Gender_Gap"])`) skews slightly negative, indicating modest improvements in gender balance. The relatively narrow interquartile range (IQR), with Q3 (`r as.numeric(iqr_stats[iqr_stats$STEM_Status == "STEM", "Q3"])`) highlighting areas of male dominance and Q1 (`r as.numeric(iqr_stats[iqr_stats$STEM_Status == "STEM", "Q1"])`) reflecting progress in female representation, suggests reduced variability. However, the positive skewness of the box plot underscores persistent male dominance, particularly in disciplines such as engineering and ICT.
+
+In contrast, OTHER fields display a more pronounced negative mean (`r as.numeric(summary_stats[summary_stats$STEM_Status == "OTHER", "Mean_Gender_Gap"])`) and median (`r as.numeric(summary_stats[summary_stats$STEM_Status == "OTHER", "Median_Gender_Gap"])`), indicating female-majority representation, particularly in health and social sciences. The broader IQR, spanning Q1 (`r as.numeric(iqr_stats[iqr_stats$STEM_Status == "OTHER", "Q1"])`) to Q3 (`r as.numeric(iqr_stats[iqr_stats$STEM_Status == "OTHER", "Q3"])`), suggests more significant variability in gender representation, with a notable skew toward female dominance.
+
+Additionally, the extremes in Table \@ref(tab:table-SmmrySttstcs) reveal significant male dominance in STEM (`r gsub(" ", "",paste("Upper: ",as.numeric(summary_stats[summary_stats$STEM_Status == "STEM", "Upper_Gender_Gap"]),"%"))`) and instances of female-majority representation (`r gsub(" ", "",paste("Lower: ",as.numeric(summary_stats[summary_stats$STEM_Status == "STEM", "Lower_Gender_Gap"]),"%"))`), with narrower variability than in OTHER fields. OTHER fields show broader extremes (`r gsub(" ", "",paste(as.numeric(summary_stats[summary_stats$STEM_Status == "OTHER", "Upper_Gender_Gap"]),"%"))` to `r gsub(" ", "",paste(as.numeric(summary_stats[summary_stats$STEM_Status == "OTHER", "Lower_Gender_Gap"]),"%"))`), reflecting greater gender diversity.  Figure \@ref(fig:Figure-Gngp) depicts these extremes as red circles, emphasising the range of gender disparities.  These findings underscore the persistent underrepresentation of females in STEM and the critical need for targeted strategies to close the gender gap and foster equity in STEM occupations.
+
+###  Analysis - How does gender parity in STEM education compare to non-STEM fields in Australia across different levels and fields from 2015 to 2022 - (Author:Vince Currie)?
+
+Figure \@ref(fig:Figure-Astrl) illustrates the gender gap in STEM and non-STEM fields across different education levels in Australia from 2015 to 2022. The stacked bar chart reveals notable disparities, with STEM fields showing consistent male dominance across levels such as Bachelor’s and Master’s, particularly in disciplines like engineering and ICT. However, some fields at the vocational and PhD levels approach gender parity, 
+with $∥GenderGap∥\space ≤\space 1.0$ indicating near-equal representation. For example, in the Agriculture, Forestry, Fisheries, and Veterinary category,
+all levels except PhD demonstrate approximate parity.  In contrast, females dominate the PhD level (Table \@ref(tab:table-Astrltb)). The table also highlights other fields and education levels where the gender gap is near parity.
+
+Non-STEM (OTHER) fields demonstrate a contrasting trend, with a pronounced negative gender gap indicating female dominance. For instance, health and education fields exhibit significantly higher female representation across all levels, particularly in Bachelor’s and Master’s degrees (Figure \@ref(fig:Figure-Astrl)). Variability in non-STEM fields reflects broader gender diversity, with some areas achieving parity or female dominance , while others differ significantly. This contrasts with STEM, where male dominance is more uniform and persistent, requiring targeted efforts to address gender disparities. The broader range of gender gap values in non-STEM fields underscores this diversity compared to STEM. These findings emphasize the need for targeted initiatives to encourage female participation in STEM while maintaining equity in non-STEM areas.
+
+
+### Analysis - (Author:Dhanya)
+
+#### Figure 1: Population Aged 65+ for Selected Countries (1950-2020)
+
+This chart highlights the rapid growth of elderly populations in selected countries. China shows the steepest increase due to improved healthcare and longer life expectancy [@RN16]. Japan’s sharp rise post-1970 reflects its aging crisis caused by low fertility and high longevity, leading to challenges in sustaining healthcare and pensions [@RN17]. India’s slower growth suggests it remains in an earlier demographic stage, while the United States and Australia exhibit steady but less pronounced growth.
+
+#### Figure 2: Population Aged 0-14 for Selected Countries (1950-2020)
+
+India retains the largest 0-14 population due to high fertility rates [@RN18]. In contrast, China’s decline post-1970s aligns with its one-child policy [@RN19]. Developed nations like the United States, Japan, and Australia show consistent declines, reflecting lower birth rates and the challenges of maintaining a sustainable workforce in aging populations.
+
+#### Table 1: Top 5 Countries with Highest Growth in Population Aged 65+
+
+China, India, and Japan lead in growth, driven by rising life expectancies and large populations (UN DESA, 2023). Brazil and Russia follow, reflecting similar aging trends in emerging economies as they transition demographically.
+
+#### Table 2: Top 5 Countries with Highest Growth in Population Aged 0-14
+
+India, Nigeria, and Pakistan dominate, driven by high fertility rates in developing nations. Indonesia’s rise signals Southeast Asia’s growing youth population, while China’s moderated growth reflects earlier demographic trends during its high-fertility era.
 
 # Conclusion
 
