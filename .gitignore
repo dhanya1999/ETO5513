@@ -7,7 +7,7 @@
 *.zip
 *.txt
 
-# Backup files. (Author: Vince Currie.)
+# Backup files not required in GitHub. (Author: Vince Currie.)
 Scripts/assignment_2_conflict_merge.Rmd
 Scripts/assignment_2_conflict_merge2.Rmd
 Scripts/assignment_2_RB.Rmd
@@ -15,7 +15,7 @@ Scripts/assignment_2_RB2.Rmd
 Scripts/assignment_2_RB3.Rmd
 Scripts/Old_version.RMD
 
-# Copies of data files not required. (Authoor: Vince Currie.)
+# Copies of data files not required in GitHub. (Authoor: Vince Currie.)
 Data/Gender_education_area2015_2022_old2.csv
 Data/Gender_education_area2015_2022_old2_dummy.csv
 Data/Gender_education_area2022_arch.csv
